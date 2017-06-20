@@ -1,0 +1,4 @@
+#!/bin/bash
+chown -R nobody . >> /feedback/err 2>&1
+sudo -u nobody ${@:1} >> /feedback/out 2>/feedback/err
+chown -R root . >> /feedback/err 2>&1

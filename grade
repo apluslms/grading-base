@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+import os
+import requests
+
+URL = os.environ.get("REC") + "/container-post"
+OUT_FILE = "/feedback/out"
+ERR_FILE = "/feedback/err"
+POINTS_FILE = "/feedback/points"
+
+data = {
+  "sid": os.environ.get("SID"),
+  "points": 0,
+  "max_points": 0,
+  "feedback": "",
+}
+
+def read_file(path):
+  if not os.path.exists(path):
+    return ""
+  with open(path, "r") as f:
+    return f.read()
+
+def parse_int(source, default):
+  try:
+    return int(source)
+  except ValueError:
+    return default
+
+def parse_points_from_out(path):
+  with open(path, "r") as f:
+    feedback = []
+    for line in f:
+      if line.startswith("TotalPoints: "):
+        data["points"] = parse_int(line.strip()[13:], 0)
+      elif line.startswith("MaxPoints: "):
+        data["max_points"] = parse_int(line.strip()[11:], 0)
+      else:
+        feedback += line
+  data["feedback"] = "".join(feedback)
+
+def parse_points_file(path):
+  parts = read_file(path).strip().split("/")
+  if len(parts) == 2:
+    data["points"] = parse_int(parts[0], 0)
+    data["max_points"] = parse_int(parts[1], 0)
+
+def post_feedback():
+  if os.path.exists(POINTS_FILE):
+    parse_points_file(POINTS_FILE)
+    data["feedback"] = read_file(OUT_FILE)
+  else:
+    parse_points_from_out(OUT_FILE)
+  err = read_file(ERR_FILE)
+  if err:
+    data["feedback"] += '<pre class="alert alert-danger">{}</pre>'.format(err)
+  requests.post(URL, data)
+
+if __name__ == "__main__":
+  post_feedback()
