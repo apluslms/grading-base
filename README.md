@@ -20,7 +20,7 @@ The following custom commands are provided in path:
 
 * `pre CMD...`
 
-    Wraps the stdout of the command into <pre> HTML element.
+    Wraps the stdout of the command into &lt;pre&gt; HTML element.
 
 * `grade`
 
