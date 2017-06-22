@@ -1,8 +1,9 @@
 FROM debian:stretch
 
 RUN apt-get update -qy && apt-get install -qy \
-  python-pip \
-  curl
+  sudo \
+  curl \
+  python-pip
 RUN pip install requests
 
 ADD aplus /aplus
