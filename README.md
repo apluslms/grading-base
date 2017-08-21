@@ -33,3 +33,8 @@ The following custom commands are provided in path:
 
     Gets feedback as HTML from /feedback/out,
     and wraps /feedback/err into alert box at the end.
+
+* `err-to-out`
+
+    Appends the captured stderr to stdout feedback without alert box.
+    Useful for unit test frameworks that produce feedback into stderr.

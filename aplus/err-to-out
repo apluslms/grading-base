@@ -1,0 +1,7 @@
+#!/bin/bash
+OUT_FILE=/feedback/out
+ERR_FILE=/feedback/err
+echo "<pre>" >> $OUT_FILE
+cat $ERR_FILE >> $OUT_FILE
+echo "</pre>" >> $OUT_FILE
+> $ERR_FILE
