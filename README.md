@@ -38,3 +38,9 @@ The following custom commands are provided in path:
 
     Appends the captured stderr to stdout feedback without alert box.
     Useful for unit test frameworks that produce feedback into stderr.
+
+* `force-charset CHARSET`
+
+    Converts recursively all files in working directory from any recognizable
+    charsets into desired charset, e.g. utf-8. Dicards unconvertible characters.
+    May be useful to sanitize output from exotic student environments.
