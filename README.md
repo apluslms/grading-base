@@ -42,5 +42,5 @@ The following custom commands are provided in path:
 * `force-charset CHARSET`
 
     Converts recursively all files in working directory from any recognizable
-    charsets into desired charset, e.g. utf-8. Dicards unconvertible characters.
+    charsets into desired charset, e.g. utf-8. Discards unconvertible characters.
     May be useful to sanitize output from exotic student environments.
