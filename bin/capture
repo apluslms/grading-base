@@ -3,4 +3,6 @@ OUT_FILE=/feedback/out
 ERR_FILE=/feedback/err
 chown -R nobody . >> $ERR_FILE 2>&1
 (sudo -u nobody ${@:1}) >> $OUT_FILE 2>>$ERR_FILE
+RES=$?
 chown -R root . >> $ERR_FILE 2>&1
+exit $RES

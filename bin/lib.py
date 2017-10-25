@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import sys, os, cgi, requests
 
 
@@ -9,12 +10,12 @@ POINTS_FILE = "/feedback/points"
 
 
 def main():
-    if len(sys.argv) == 0:
+    if len(sys.argv) < 1:
         print('Missing action for lib.py')
-        sys.exit(0)
-    action = sys.argv[0]
+        sys.exit(1)
+    action = sys.argv[1]
     if action == 'grade':
-        parse_and_post_feedback()
+        parse_and_post_feedback(sys.argv[2] if len(sys.argv) > 2 else None)
     else:
         print('Unknown action: {}'.format(action))
 
@@ -30,22 +31,23 @@ def get_empty_grade_data():
 
 def parse_points_from_out(path, data=None):
     data = data or get_empty_grade_data()
-    with open(path, "r") as f:
-        feedback = []
-        for line in f:
-            if line.startswith("TotalPoints: "):
-                data["points"] = parse_int(line.strip()[13:], 0)
-            elif line.startswith("MaxPoints: "):
-                data["max_points"] = parse_int(line.strip()[11:], 0)
-            else:
-                feedback += line
+    feedback = []
+    if os.path.exists(path):
+        with open(path, "r") as f:
+            for line in f:
+                if line.startswith("TotalPoints: "):
+                    data["points"] = parse_int(line.strip()[13:], 0)
+                elif line.startswith("MaxPoints: "):
+                    data["max_points"] = parse_int(line.strip()[11:], 0)
+                else:
+                    feedback += line
     data["feedback"] = "".join(feedback)
     return data
 
 
-def parse_points_file(path, data=None):
+def parse_points_string(source, data=None):
     data = data or get_empty_grade_data()
-    parts = read_file(path).strip().split("/")
+    parts = source.strip().split("/")
     if len(parts) == 2:
         data["points"] = parse_int(parts[0], 0)
         data["max_points"] = parse_int(parts[1], 0)
@@ -53,15 +55,21 @@ def parse_points_file(path, data=None):
 
 
 def post_grade_data(data):
-    url = os.environ.get("REC") + "/container-post"
-    requests.post(url, data)
+    rec = os.environ.get("REC")
+    if not rec:
+        print('The URL for submitting feedback is lost!', file=sys.stderr)
+        sys.exit(1)
+    requests.post(rec + "/container-post", data)
 
 
-def parse_and_post_feedback():
+def parse_and_post_feedback(points=None):
 
     # Check for points and captured stdout.
-    if os.path.exists(POINTS_FILE):
-        data = parse_points_file(POINTS_FILE)
+    if points:
+        data = parse_points_string(points)
+        data["feedback"] = read_file(OUT_FILE)
+    elif os.path.exists(POINTS_FILE):
+        data = parse_points_file(read_file(POINTS_FILE))
         data["feedback"] = read_file(OUT_FILE)
     else:
         data = parse_points_from_out(OUT_FILE)

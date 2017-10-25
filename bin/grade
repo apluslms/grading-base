@@ -1,2 +1,2 @@
 #!/bin/bash
-./lib.py grade
+lib.py grade $1
