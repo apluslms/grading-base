@@ -1,6 +1,7 @@
 #!/bin/bash
 if [ $# -ne 1 ]; then
-  echo $0 charset_name (e.g. utf-8)
+  echo $0 charset_name
+  echo (e.g. charset_name = utf-8)
   exit 0
 fi
 find . -type f -exec change_charset.sh $1 {} \;
