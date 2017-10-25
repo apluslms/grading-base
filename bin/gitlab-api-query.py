@@ -21,7 +21,7 @@ def gitlab_api_query(host, token = None, forked = None):
     source = lib.read_file(SOURCE_FILE).strip()
     url = None
     try:
-        rid = quote_plus(source[source.index(":") + 1:])
+        rid = quote_plus(source[source.index(":") + 1:-4])
         url = "https://{}/api/v3/projects/{}".format(host, rid)
         qs = "?private_token={}".format(token)
 
@@ -30,26 +30,29 @@ def gitlab_api_query(host, token = None, forked = None):
             gitlab_api_check(r.json(), forked)
         elif r.status_code == 404:
             if token:
-                print("Did not find project: {}".format(url))
+                print("Did not find project:\n{}".format(url), file=sys.stderr)
                 sys.exit(1)
         else:
             r.raise_for_status()
     except Exception as e:
-        print("Failed to check project: {}".format(url))
+        print("Failed to check project:\n{}".format(url), file=sys.stderr)
         print(str(e), file=sys.stderr);
         sys.exit(1)
 
 
 def gitlab_api_check(json, forked = None):
     if json.get("public", True):
-        print("{} has public access in settings! Remove it to grade exercises.".format(json["web_url"]))
+        print("{}\nhas public access in settings!\n"
+            "Remove it to grade exercises."
+            .format(json["web_url"]), file=sys.stderr)
         sys.exit(1)
     if forked:
         if (
             not "forked_from_project" in json
             or json["forked_from_project"]["path_with_namespace"] != forked
         ):
-            print("{} is not forked from {}.".format(json("web_url", forked)))
+            print("{}\nis not forked from {}.\nStart from the fork step."
+                .format(json["web_url"], forked), file=sys.stderr)
             sys.exit(1)
 
 

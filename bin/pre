@@ -1,5 +1,9 @@
 #!/bin/bash
 OUT=$(${@:1})
-echo "<pre>"
-echo $OUT | sed 's/</\&lt;/g; s/>/\&gt;/g; s/\&/\&amp;/g'
-echo "</pre>"
+RES=$?
+if [ "$OUT" != "" ]; then
+  echo "<pre>"
+  echo $OUT | sed 's/</\&lt;/g; s/>/\&gt;/g; s/\&/\&amp;/g'
+  echo "</pre>"
+fi
+exit $RES

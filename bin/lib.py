@@ -77,9 +77,13 @@ def parse_and_post_feedback(points=None):
     # Check for captured stderr.
     err = read_file(ERR_FILE).strip()
     if err:
-        data["feedback"] += '<pre class="alert alert-danger">{}</pre>'.format(
-            escape_html(err)
-        )
+        data["feedback"] += ('<pre class="alert alert-danger">'
+            '{}</pre>'.format(escape_html(err)))
+
+    # Check for appendix.
+    if os.path.exists(APPENDIX_FILE):
+        data["feedback"] += ('<div class="appendixes"><h4>Appendixes</h4>'
+            '{}</div>'.format(read_file(APPENDIX_FILE)))
 
     post_grade_data(data)
 
