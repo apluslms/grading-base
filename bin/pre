@@ -1,5 +1,5 @@
 #!/bin/bash
-TMP_FILE=/feedback/pretmp
+TMP_FILE=preprepreprepreprepretmp
 ${@:1} > $TMP_FILE
 RES=$?
 if [ -s $TMP_FILE ]; then
