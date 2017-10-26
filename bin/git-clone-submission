@@ -4,15 +4,15 @@ DIR=/submission/user-repo
 APPENDIX=/feedback/appendix
 
 if [ "$#" -lt 1 ]; then
-	echo "Usage: $0 private_key_path [file paths to pick out...]" >&2
-	exit 1
+  echo "Usage: $0 private_key_path [file paths to pick out...]" >&2
+  exit 1
 fi
 
 # Pull the URL file.
 if [ ! -f $READ ]
 then
-	echo "Git URL file \"$READ\" not found." >&2
-	exit 1
+  echo "Git URL file \"$READ\" not found." >&2
+  exit 1
 fi
 SOURCE=$(cat $READ)
 mv $READ .
@@ -28,16 +28,19 @@ res=$?
 rm -rf /root/.ssh
 if [ $res -eq 0 ]
 then
-	echo "Finished successfully - HEAD:"
-	git rev-parse HEAD
+  GITOUT=$(cat /feedback/err)
+  GITREV=$(git rev-parse HEAD)
+  echo $GITOUT
+  echo "Finished successfully - HEAD: $GITREV"
+  > /feedback/err
 else
-	echo ""
-	echo "Specifically,"
-	echo "1. Add given deploy key to your project"
-	echo "2. Enter exact repository URL"
-	echo ""
-	echo "Failed to clone: $SOURCE" >&2
-	exit $res
+  echo ""
+  echo "Specifically,"
+  echo "1. Add given deploy key to your project"
+  echo "2. Enter exact repository URL"
+  echo ""
+  echo "Failed to clone: $SOURCE" >&2
+  exit $res
 fi
 cd ..
 
@@ -45,19 +48,19 @@ cd ..
 FILES=${@:2}
 FSTAT=0
 if [ ${#FILES[@]} -gt 0 ]; then
-	for f in $FILES
-	do
-		if [ ! -f $DIR/$f ]
-		then
-			echo "Failed to find \"$f\"." 1>&2
-			FSTAT=1
-		else
-			TARGET=user/${f##*/}
-			mv $DIR/$f $TARGET
-			echo "<p class=\"submission-file\">$f</p><pre>" >> $APPENDIX
-			cat $TARGET | sed 's/</\&lt;/g; s/>/\&gt;/g; s/\&/\&amp;/g' >> $APPENDIX
-			echo "</pre>" >> $APPENDIX
-		fi
-	done
+  for f in $FILES
+  do
+    if [ ! -f $DIR/$f ]
+    then
+      echo "Failed to find \"$f\"." 1>&2
+      FSTAT=1
+    else
+      TARGET=user/${f##*/}
+      mv $DIR/$f $TARGET
+      echo "<p class=\"submission-file\">$f</p><pre>" >> $APPENDIX
+      cat $TARGET | sed 's/\&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' >> $APPENDIX
+      echo "</pre>" >> $APPENDIX
+    fi
+  done
 fi
 exit $FSTAT

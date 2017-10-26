@@ -1,9 +1,11 @@
 #!/bin/bash
-OUT=$(${@:1})
+TMP_FILE=/feedback/pretmp
+${@:1} > $TMP_FILE
 RES=$?
-if [ "$OUT" != "" ]; then
+if [ -s $TMP_FILE ]; then
   echo "<pre>"
-  echo $OUT | sed 's/</\&lt;/g; s/>/\&gt;/g; s/\&/\&amp;/g'
+  cat $TMP_FILE | sed 's/</\&lt;/g; s/>/\&gt;/g; s/\&/\&amp;/g'
   echo "</pre>"
 fi
+rm $TMP_FILE
 exit $RES
