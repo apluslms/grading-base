@@ -29,10 +29,8 @@ res=$?
 rm -rf /root/.ssh
 if [ $res -eq 0 ]
 then
-  GITOUT=$(cat /feedback/err)
   GITREV=$(git rev-parse HEAD)
-  echo $GITOUT
-  echo "Finished successfully - HEAD: $GITREV"
+  echo "Cloned successfully - HEAD: $GITREV"
   > /feedback/err
 else
   echo "" >&2
