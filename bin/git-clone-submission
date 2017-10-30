@@ -20,6 +20,7 @@ mv $READ .
 # Clone the repository.
 mkdir -p /root/.ssh
 cp $1 /root/.ssh/id_rsa
+chmod 600 /root/.ssh/id_rsa
 ssh -T -o "StrictHostKeyChecking no" git@version.aalto.fi > /dev/null 2&>1
 mkdir -p $DIR
 cd $DIR
