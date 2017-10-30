@@ -35,11 +35,11 @@ then
   echo "Finished successfully - HEAD: $GITREV"
   > /feedback/err
 else
-  echo ""
-  echo "Specifically,"
-  echo "1. Add given deploy key to your project"
-  echo "2. Enter exact repository URL"
-  echo ""
+  echo "" >&2
+  echo "Specifically," >&2
+  echo "1. Add given deploy key to your project" > &2
+  echo "2. Enter exact repository URL" >&2
+  echo "" >&2
   echo "Failed to clone: $SOURCE" >&2
   exit $res
 fi
@@ -53,7 +53,7 @@ if [ ${#FILES[@]} -gt 0 ]; then
   do
     if [ ! -f $DIR/$f ]
     then
-      echo "Failed to find \"$f\"." 1>&2
+      echo "Failed to find \"$f\"." >&2
       FSTAT=1
     else
       TARGET=user/${f##*/}
