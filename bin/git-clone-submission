@@ -35,7 +35,7 @@ then
 else
   echo "" >&2
   echo "Specifically," >&2
-  echo "1. Add given deploy key to your project" >&2
+  echo "1. Add course group to project members" >&2
   echo "2. Enter exact repository URL" >&2
   echo "" >&2
   echo "Failed to clone: $SOURCE" >&2
