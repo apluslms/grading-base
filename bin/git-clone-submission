@@ -35,8 +35,8 @@ then
 else
   echo "" >&2
   echo "Specifically," >&2
-  echo "1. Add course group to project members" >&2
-  echo "2. Enter exact repository URL" >&2
+  echo "1. Enter exact repository URL" >&2
+  echo "2. Add course user/group to members" >&2
   echo "" >&2
   echo "Failed to clone: $SOURCE" >&2
   exit $res
