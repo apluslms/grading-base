@@ -1,5 +1,7 @@
 FROM debian:stretch
 
+ENV LANG C.UTF-8
+
 RUN apt-get update -qqy && apt-get install -qqy --no-install-recommends \
     sudo \
     curl \
