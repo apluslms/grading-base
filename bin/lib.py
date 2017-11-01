@@ -69,7 +69,7 @@ def parse_and_post_feedback(points=None):
         data = parse_points_string(points)
         data["feedback"] = read_file(OUT_FILE)
     elif os.path.exists(POINTS_FILE):
-        data = parse_points_file(read_file(POINTS_FILE))
+        data = parse_points_string(read_file(POINTS_FILE))
         data["feedback"] = read_file(OUT_FILE)
     else:
         data = parse_points_from_out(OUT_FILE)
