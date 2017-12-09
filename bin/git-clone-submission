@@ -1,6 +1,7 @@
 #!/bin/bash
 READ=/submission/user/gitsource
-DIR=/submission/user-repo
+DIR=/submission-repo
+PICKDIR=/submission/user
 APPENDIX=/feedback/appendix
 
 if [ "$#" -lt 1 ]; then
@@ -41,7 +42,6 @@ else
   echo "Failed to clone: $SOURCE" >&2
   exit $res
 fi
-cd ..
 
 # Optionally pick files.
 FILES=${@:2}
@@ -54,7 +54,7 @@ if [ ${#FILES[@]} -gt 0 ]; then
       echo "Failed to find \"$f\"." >&2
       FSTAT=1
     else
-      TARGET=user/${f##*/}
+      TARGET=$PICKDIR/${f##*/}
       mv $DIR/$f $TARGET
       echo "<p class=\"submission-file\">$f</p><pre>" >> $APPENDIX
       cat $TARGET | sed 's/\&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' >> $APPENDIX
