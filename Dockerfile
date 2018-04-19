@@ -14,5 +14,6 @@ RUN apt-get update -qqy && DEBIAN_FRONTEND=noninteractive apt-get install -qqy -
 
 ADD bin /usr/local/bin
 
-RUN mkdir -p /feedback
+RUN mkdir -p /feedback /submission /exercise
 WORKDIR /submission
+CMD ["/exercise/run.sh"]
