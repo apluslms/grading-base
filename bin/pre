@@ -1,11 +1,19 @@
-#!/bin/bash
-TMP_FILE=preprepreprepreprepretmp
-${@:1} > $TMP_FILE
+#!/bin/sh
+TMP_FILE=/tmp/preout
+
+class=""
+while [ -z "${1%%-*}" ]; do
+    case "$1" in
+        -c) class="$class${class:+ }$2" ; shift 2 ;;
+        --) shift ; break ;;
+        *) echo "Invalid option '$1' for $0" >&2
+           exit 64
+           ;;
+    esac
+done
+
+"$@" > $TMP_FILE
 RES=$?
-if [ -s $TMP_FILE ]; then
-  echo "<pre>"
-  cat $TMP_FILE | sed 's/\&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g'
-  echo "</pre>"
-fi
-rm $TMP_FILE
+[ -s $TMP_FILE ] && _prewrap "$class" < $TMP_FILE
+rm $TMP_FILE || true
 exit $RES

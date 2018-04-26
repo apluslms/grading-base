@@ -1,8 +1,27 @@
-#!/bin/bash
-OUT_FILE=/feedback/out
-ERR_FILE=/feedback/err
-chown -R nobody . >> $ERR_FILE 2>&1
-(sudo -u nobody ${@:1}) >> $OUT_FILE 2>>$ERR_FILE
+#!/bin/sh
+exec 2>> /feedback/errors
+
+out=/feedback/out
+err=/feedback/err
+user=nobody
+while [ -z "${1%%-*}" ]; do
+    case "$1" in
+        -d) out=$2/out ; err=$2/err ; shift 2 ;;
+        -o) out=$2 ; shift 2 ;;
+        -e) err=$2 ; shift 2 ;;
+        -u) user=$2 ; shift 2 ;;
+        --) shift ; break ;;
+        *) echo "Invalid option '$1' for $0" >&2
+           exit 64
+           ;;
+    esac
+done
+
+chown -R $user . >&2
+USER=$user HOME=/tmp PATH=/usr/local/bin:/usr/bin:/bin \
+    env -u REC -u SID -- \
+    chpst -u $user -- \
+    "$@" >> "$out" 2>> "$err"
 RES=$?
-chown -R root . >> $ERR_FILE 2>&1
+chown -R root . >&2
 exit $RES

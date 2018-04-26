@@ -1,5 +1,3 @@
-#!/bin/bash
-OUT_FILE=/feedback/out
-ERR_FILE=/feedback/err
-pre cat $ERR_FILE >> $OUT_FILE
-> $ERR_FILE
+#!/bin/sh -e
+_prewrap < /feedback/err >> /feedback/out
+: > /feedback/err

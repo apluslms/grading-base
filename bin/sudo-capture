@@ -1,2 +1,4 @@
-#!/bin/bash
-(${@:1}) >> /feedback/out 2>/feedback/err
+#!/bin/sh
+USER=root HOME=/root env -u REC -u SID -- "$@" >> /feedback/out 2>> /feedback/err
+RES=$?
+exit $RES

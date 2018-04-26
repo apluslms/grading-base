@@ -7,27 +7,34 @@ environments can use in the Dockerfile FROM instruction.
 
 The following custom commands are provided in path:
 
-* `sudo-capture CMD...`
 
-    Executes the command and captures the stdout and stderr to /feedback.
-    This executes as root (default user in docker).
+* `capture [-d dir] [-o out] [-e err] [-u user] CMD...`
 
-* `capture CMD...`
+    Changes the ownership of the working directory to `user`,
+    executes the command as `user`,
+    and captures the stdout and stderr to `dir`.
 
-    Changes the ownership of the working directory to "nobody",
-    executes the command as "nobody",
-    and captures the stdout and stderr to /feedback.
+    By default `user` is `nobody` and `dir` is `/feedback`.
+    Alternative to `-d`, arguments `-o` and `-e` can be used to set stdout and stderr files separately.
 
-* `pre CMD...`
+    In addition to out and err redirection, `capture` will make sure that the environment does not contain `REC` or `SID` (the variables used for posting feedback).
+
+    For example, `capture pre ./my_test` will execute `./my_test` as `nobody` and redirect stdout and stderr to `/feedback/out` and `/feedback/err`.
+
+    If you need to run captured code as root, then use `sudo-capture`.
+
+* `pre [-c class] CMD...`
 
     Wraps the stdout of the command into &lt;pre&gt; HTML element
     and escapes any HTML inside. Can be chained, e.g.
-    `capture pre my_assessment_code.sh arg1 arg2`
+    `capture pre ./my_assessment_code.sh arg1 arg2`
+
+    Option `-c` can be used to set HTML class for the element.
 
 * `grade [points/max]`
 
     Submits the feedback back to the grading service.
-    This command MUST be executed at the end of the grading.
+    This command **must** be executed at the end of the grading for the grade to be stored.
 
     Gets granted points in priority order from:
     a) argument in format "5/10"
@@ -35,19 +42,25 @@ The following custom commands are provided in path:
     c) /feedback/out including lines "TotalPoints: 5" and "MaxPoints: 10"
 
     Gets feedback as HTML from /feedback/out,
-    and wraps /feedback/err into alert box at the end.
+    and wraps /feedback/err into pre with `alert-danger` class at the end.
     If /feedback/appendix exists it will be included at the very end.
 
 * `err-to-out`
 
-    Appends the captured stderr to stdout feedback without alert box.
-    Useful for unit test frameworks that produce feedback into stderr.
+    Appends the `/feedback/err` to `/feedback/out` without `alert-danger` class.
+    Useful for unit test frameworks that produce the feedback into stderr.
 
 * `force-charset CHARSET`
 
     Converts recursively all files in working directory from any recognizable
     charsets into desired charset, e.g. utf-8. Discards unconvertible characters.
     May be useful to sanitize output from exotic student environments.
+
+* [chpst](http://smarden.org/runit/chpst.8.html), [setuidgid](https://cr.yp.to/daemontools/setuidgid.html), [softlimit](https://cr.yp.to/daemontools/softlimit.html) and [setlock](https://cr.yp.to/daemontools/setlock.html)
+
+    These utilities are used internally, but can also benefit when writing grading scripts.
+    First one provides the other three.
+    Read linked documentations for more details.
 
 * `gitlab-api-query.py GIT_HOST [api_token] [require_fork]`
 
