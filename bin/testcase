@@ -1,0 +1,67 @@
+#!/bin/sh
+exec 2>> /feedback/errors
+
+# Read arguments
+
+title=""
+points=0
+skip=0
+
+usage() {
+    echo "usage: $0 [-t title] [-p points_on_success] [-s skip] prog arg1 arg2..." >&2
+    echo " -t title   | title (display name) for this test" >&2
+    echo " -p points  | if test returns 0, then we give so many points for this test, else 0" >&2
+    echo " -s skip    | if not 0, then skip execution of this test. $0 will return with skip as the exit code" >&2
+}
+
+while [ -z "${1%%-*}" ]; do
+    case "$1" in
+        -t|-n) title=$2 ;;
+        -p) points=$2 ;;
+        -s|-e) skip=$2 ;;
+        --) shift ; break ;;
+        *)
+            echo "ERROR: Invalid option $1" >&2
+            usage
+            exit 64
+            ;;
+    esac
+    shift 2
+done
+
+if [ -z "$1" ]; then
+    echo "ERROR: not test executable" >&2
+    usage
+    exit 64
+fi
+
+# Resolve output path
+testnum=0
+out=/feedback/$(printf "%02d" $testnum)
+while [ -e $out ]; do
+    testnum=$((testnum + 1))
+    out=/feedback/$(printf "%02d" $testnum)
+done
+
+# Init output directory
+mkdir -p $out >&2
+echo "0" > $out/points
+echo "$points" > $out/max_points
+[ "$title" ] && echo "$title" > $out/title
+
+# If skip is not 0, then exit
+if [ $skip -ne 0 ]; then
+    echo "skipped" > $out/status
+    exit $skip
+fi
+
+# Run the actual test
+capture -d $out -- "$@"
+RES=$?
+if [ $RES -eq 0 ]; then
+    echo "passed" > $out/status
+    echo "$points" > $out/points
+else
+    echo "failed" > $out/status
+fi
+exit $RES

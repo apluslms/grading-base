@@ -1,0 +1,59 @@
+#!/bin/sh
+exec 2>> /feedback/errors
+
+cd /feedback/
+
+if [ -s points ]; then
+    set-error "/feedback/points exists when running create-test-feedback"
+    exit 1
+fi
+total_points=0
+total_max_points=0
+
+
+for fn in */; do
+    [ -d "$fn" ] || continue
+
+    title=$(test -s $fn/title && cat $fn/title || echo "Test $fn")
+    status=$(test -s $fn/status && cat $fn/status)
+    points=$(test -s $fn/points && cat $fn/points || echo 0)
+    max_points=$(test -s $fn/max_points && cat $fn/max_points || echo 0)
+    if [ "$status" != "passed" ]; then
+        error="alert alert-warning"
+    else
+        error=""
+    fi
+
+    if [ "$status" != "ignored" ]; then
+        if [ "$status" != "skipped" ]; then
+            total_points=$((total_points + points))
+        fi
+        total_max_points=$((total_max_points + max_points))
+    fi
+
+
+    echo "<h3>$title ($points/$max_points)</h3>" >> out
+    case "$status" in
+        skipped)
+            echo "<p>Test skipped</p>" >> out
+            ;;
+        skipped)
+            echo "<p>Test ignored</p>" >> out
+            ;;
+        passed|failed)
+            if [ -s $fn/out ]; then
+                cat $fn/out | _prewrap "$error" >> out
+            fi
+            if [ -s $fn/err ]; then
+                cat $fn/err | _prewrap "$error" >> out
+            fi
+            ;;
+        *)
+            set-error "Test case '$title' ($fn) has invalid state '$state'"
+            echo "<p>Internal error. Contact staff.</p>" >> out
+            exit 1
+            ;;
+    esac
+done
+
+echo "$total_points/$total_max_points" >> points

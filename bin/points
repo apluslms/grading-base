@@ -1,0 +1,30 @@
+#!/bin/sh -e
+
+pfile=/feedback/points
+new_points=$1
+only_if=${2:-0}
+
+if [ -z "$new_points" ]; then
+    echo "usage: $0 add_points [if_this_is_zero]" >&2
+    exit 64
+fi
+
+# read current state
+if [ -s $pfile ]; then
+    IFS=/ read points max_points < $pfile
+fi
+case ${points:-} in
+    ''|*[!0-9]*) points=0 ;;
+esac
+case ${max_points:-} in
+    ''|*[!0-9]*) max_points=$points ;;
+esac
+
+# change state
+max_points=$((max_points + new_points))
+if [ $only_if -eq 0 ]; then
+    points=$((points + new_points))
+fi
+
+# store state
+echo "$points/$max_points" > $pfile

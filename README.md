@@ -7,6 +7,20 @@ environments can use in the Dockerfile FROM instruction.
 
 The following custom commands are provided in path:
 
+* `testcase [-t title] [-p points_on_success] [-s only_if_zero] CMD...`
+
+    Defines a single test case.
+    Useful when running multiple commands for grading.
+    Creates `/feedback/<number>` directory with increasing number for every call.
+
+    If `title` is provided, it's stored in `/feedback/<number>/title`.
+
+    If `points_on_success` is provided, it will be written to `/feedback/<number>/max_points`.
+    If CMD exits with 0, then it will also be written to `/feedback/<number>/points`.
+
+    If `only_if_zero` is provided and not 0, then CMD is not executed and `testcase` exits with non-zero exit code.
+
+    Status of this test is stored in `/feedback/<number>/status` accordingly.
 
 * `capture [-d dir] [-o out] [-e err] [-u user] CMD...`
 
@@ -31,6 +45,31 @@ The following custom commands are provided in path:
 
     Option `-c` can be used to set HTML class for the element.
 
+* `points <points> [only_if_zero]`
+
+    Add `points` to given and maximum points in `/feedback/points`.
+    If the file exists, it will be updated.
+    If `only_if_zero` is given and not zero, then only maximum points are changed.
+
+    This can be used in conjunction with `capture` to give points conditionally.
+    For example,
+
+    ```
+    capture ./my_assessment_code.sh
+    points 10 $?
+    ```
+
+    where `$?` is the exit code from `capture`.
+
+* `title [-c class] [-e element] [-O] <text>`
+
+    Writes `text` inside HTML element `element` to `/feedback/out`.
+    The element is `h1` by default, but can be changed with `-e`.
+
+    Option `-c` can be used to set HTML class for the element.
+
+    Flag `-O` changes the output to stdout.
+
 * `grade [points/max]`
 
     Submits the feedback back to the grading service.
@@ -45,6 +84,27 @@ The following custom commands are provided in path:
     and wraps /feedback/err into pre with `alert-danger` class at the end.
     If /feedback/appendix exists it will be included at the very end.
 
+* `stdio-diff [-c] [-s] [-S] [-p pass_text] [-P] [-f fail_text] <in_file> <expected_out> CMD...`
+
+    Simple text comparison wrapper based on `diff`.
+    Given `in_file` and `expected_out`, script will execute CMD with `in_file` as stdin and store it's stdout.
+    Finally, it will compare `expected_out` to stdout of the CMD.
+    The output from diff is revealed to the user, unless `fail_text` is provided.
+
+    Option `-c` makes output case sensitive.
+    Option `-s` makes output space sensitive. There needs to be space between words, but amount doesn't matter.
+    Option `-S` makes diff totally ignore space (removes all space before comparison).
+
+    By default, `ok` is printed when the output matches the expected.
+    The string can be changed to a custom value with `-p` or to nothing with `-P`.
+
+    This command can be used with `capture` and `testcase`.
+    E.g. `capture pre stdio-diff in.txt out.txt ./student_code`.
+
+* `create-test-feedback`
+
+    Combines feedback items from `/feedback/<number>` directories to `/feedback/out`.
+
 * `err-to-out`
 
     Appends the `/feedback/err` to `/feedback/out` without `alert-danger` class.
@@ -55,6 +115,11 @@ The following custom commands are provided in path:
     Converts recursively all files in working directory from any recognizable
     charsets into desired charset, e.g. utf-8. Discards unconvertible characters.
     May be useful to sanitize output from exotic student environments.
+
+* `set-error [msg]`
+
+    Set submission error state by writing `true` to `/feedback/error`.
+    If `msg` is provided, then it is written as the reason to `/feedback/errors`.
 
 * [chpst](http://smarden.org/runit/chpst.8.html), [setuidgid](https://cr.yp.to/daemontools/setuidgid.html), [softlimit](https://cr.yp.to/daemontools/softlimit.html) and [setlock](https://cr.yp.to/daemontools/setlock.html)
 

@@ -1,0 +1,45 @@
+#!/bin/sh
+
+case=""
+space=""
+allspace=""
+pass="ok"
+fail=""
+while [ -z "${1%%-*}" ]; do
+    case "$1" in
+        -c) case="x" ; shift ;;
+        -s) space="x" ; shift ;;
+        -S) allspace="x" ; shift ;;
+        -p) pass="$2"; shift 2 ;;
+        -P) pass="" ; shift ;;
+        -f) fail="$2" ; shift 2 ;;
+        --) shift ; break ;;
+        *) echo "Invalid option '$1' for $0" >&2
+           exit 1
+           ;;
+    esac
+done
+
+diff="diff --suppress-common-lines"
+[ -z "$case" ] && diff="$diff --ignore-case"
+[ -z "$space" ] && diff="$diff --ignore-space-change --ignore-trailing-space --ignore-blank-lines --strip-trailing-cr"
+[ "$allspace" ] && diff="$diff --ignore-all-space"
+
+in=$1
+expected=$2
+out=/tmp/stdio-diff.out
+shift 2
+
+"$@" > $out < $in
+
+if [ "$fail" ]; then
+    $diff -q $out $expected > /dev/null
+    RES=$?
+else
+    $diff $out $expected
+    RES=$?
+fi
+rm $out
+[ $RES -eq 0 -a "$pass" ] && echo "$pass"
+[ $RES -ne 0 -a "$fail" ] && echo "$fail"
+exit $RES

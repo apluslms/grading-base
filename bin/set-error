@@ -1,0 +1,4 @@
+#!/bin/sh
+[ "$1" ] && msg=": $@" || msg=""
+echo "SUBMISSION SET ERROR$msg" > /feedback/errors
+echo "true" > /feedback/error

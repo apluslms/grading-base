@@ -1,0 +1,22 @@
+#!/bin/sh
+
+element="h1"
+class=""
+stdout=""
+while [ -z "${1%%-*}" ]; do
+    case "$1" in
+        -c) class="$class${class:+ }$2" ; shift 2 ;;
+        -e) element="$2" ; shift 2 ;;
+        -O) stdout="x" ; shift 1 ;;
+        *) echo "Invalid option '$1' for $0" >&2
+           exit 64
+           ;;
+    esac
+done
+
+if [ -z "$stdout" ]; then
+    exec >> /feedback/out
+fi
+
+[ "$class" ] && class_a=" class=\"$class\""
+echo "<$element$class_a>$@</$element>"
