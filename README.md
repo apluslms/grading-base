@@ -1,11 +1,100 @@
-A docker container that includes a stable Debian Linux and convenience
-grading scripts to capture command output and to submit generated
-feedback after grading.
+A docker container that includes a stable Debian Linux and convenience commands for grading a student submission.
+Commands include tools from capturing the test output to submitting a feedback back to the grading service.
 
-This container is a base that new submission grading/assessment
-environments can use in the Dockerfile FROM instruction.
+This container is just a base and does not include tools for different programming and scripting languages.
+Thus, actual grading/assessment containers should derive from this container via the FROM instruction in their Dockerfiles.
 
-The following custom commands are provided in path:
+You can find many grading containers on [the apluslms page on docker hub](https://hub.docker.com/u/apluslms/).
+Containers starting with `grade-` are relevant for this purpose.
+
+Version of grading base has format `<major>.<minor>`.
+Major is updated when there is backwards incompatible change.
+For example, when deprecated tool is removed.
+Minor number is updated every time there is something new, where that bug fixes, added features or update on the debian base image.
+Derived containers typically use format `<tool version>-<garding-base version>u<update>`,
+where tool version is the version from upstream, grading-base is the version of this container and update is number that indicates update on containerisation.
+So, for example, grade-python `3.5-2.2u1` means that there is python 3.5 on top of grading-base 2.2 and it's first update after initial release.
+Update part is optional and can be omitted.
+
+# Filesystem layout
+
+* `/submission/user`
+
+    Files for the solution submitted by the student are stored here.
+    This path can be used as working directory.
+
+* `/exercise`
+
+    Exercise files are mounted here in a read only mode.
+    With mooc-grader, that means the path you entered in `mount`.
+    Typically, this includes `run.sh` and unit test files.
+
+* `/feedback`
+
+    Grading script should store feedback in this path.
+    Most utility commands do so, including `capture`, `testcase` and `grade`.
+    In the future, mooc-grader will read files from this path instead of expecting a post request.
+
+    * `/feedback/points`:
+
+        Final points.
+        Valid format for the data is `<points>/<max_points>` e.g. `5/10`.
+        You can use `points` to update this file.
+        Points are read by `grade`.
+
+    * `/feedback/out`:
+
+        Feedback that is going be presented in the LMS.
+        Typically, data is in html format.
+        You should use `pre` to wrap plain text to html.
+        You can capture feedback with `capture pre <command>`, for example.
+
+    * `/feedback/err`:
+
+        Error messages from a student or a testing code.
+        If present, `grade` will append this inside a pre tag at the end of the out file.
+        This file typically contains stderr from the test code.
+        For example, `capture` redirects stderr to this file.
+        If stderr is normal output (e.g. with python unit tests), then you should consider using `err-to-out`.
+
+    * `/feedback/errors`:
+
+        Errors that should be visible only to staff.
+        This file is added as a part of `grading_data` and send to the grading service.
+        Then, data can be shown in the LMS to the course staff.
+        Data is expected to be plain text messages from `run.sh` and other tools.
+        You can add `exec 2>> /feedback/errors` in start of your `run.sh` to capture problems from there.
+
+    * `/feedback/error`:
+
+        If this file contains `true`, then the submission is set in an error state in the LMS.
+        You can use `set-error` in your script to set this file.
+
+* `/feedback/<number>`
+
+    A single feedback item.
+    A set of these directories is considered the feedback list.
+    Typically, one folder matches one test case.
+    For now, this feedback list is not fully supported and the tool `create-test-feedback` is provided to render these directories to `/feedback/out`.
+    Nevertheless, this allows building tools and scripts that export feedback in this format.
+    In future, different templates can be used to render the feedback list in the grading service.
+    The `grade` tool will automatically merge these directories to a single html file, if grading service doesn't support feedback as a list.
+
+    For every numbered path (feedback item), there can exists any number of files, but following files are typical.
+    Following files are supported by `create-test-feedback` and a basic template on the grading service.
+    More advanced or specific templates can of course deviate from those.
+
+    * `.../title`: A title or a display name for this feedback item.
+    * `.../status`: The status of this feedback. Valid values: `ignored`, `skipped`, `passed`, `failed`, `error`.
+    * `.../points`: Points given from this item.
+    * `.../max_points`: Maximum points that could be given from this item.
+    * `.../out`: Stdout from the test.
+    * `.../err`: Stderr from the test.
+
+
+# Utility commands
+
+Following utility commands are provided in the path.
 
 * `testcase [-t title] [-p points_on_success] [-s only_if_zero] CMD...`
 
