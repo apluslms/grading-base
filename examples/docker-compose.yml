@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  grader:
+    image: apluslms/run-mooc-grader
+    user: $USER_ID:$DOCKER_GID
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/aplus:/tmp/aplus
+      - .:/srv/courses/default:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+  plus:
+    image: apluslms/run-aplus-front
+    user: $USER_ID:$USER_GID
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      - grader

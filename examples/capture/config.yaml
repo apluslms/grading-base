@@ -1,0 +1,37 @@
+---
+title: The capture pattern
+description: An example of grading scrtipt using the capture tool
+instructions: |
+    <h4>The problem</h4>
+    <p>
+        In this exercise you must implement a shell script tbat
+        prints <samp>Hello World!</samp> or <samp>Hello Jack!</samp>
+        when <code>Jack</code> is given as the first argument.
+    </p>
+    <h4>Grading</h4>
+    <p>
+        This exercise uses utilities <code>capture</code> and
+        <code>points</code> to do linear multipart grading.
+        We create a bit nicer output using tools <code>title</code> and
+        <code>pre</code>.
+        Remember that, <code>testcase</code> could be better suited when you
+        have multiple test cases.
+    </p>
+    <p>
+        These utilities are good when you are creating a single test or few simple ones.
+        Many more complex test frameworks build on top of capture, for example
+        <code>unittest-capture</code> in <code>apluslms/grade-python</code> container.
+    </p>
+    <p>
+        Remember to check project README and <code>run.sh</code> for more information.
+    </p>
+
+view_type: access.types.stdasync.acceptFiles
+files:
+  - field: file1
+    name: solution.sh
+
+container:
+  image: apluslms/grading-base
+  mount: capture
+  cmd: /exercise/run.sh

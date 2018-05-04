@@ -1,0 +1,43 @@
+---
+title: The testcase pattern
+description: An example of grading script using the testcase tool
+instructions: |
+    <h4>The problem</h4>
+    <p>
+        In this exercise you must implement a shell script tbat
+        reads two numbers per line and calculates addition.
+        All results that are greater than 10 should be limited to 10.
+        Your script should print line per input line in format
+        <code>a + b = c</code> where a and b are the given numbers
+        and c is the result.
+    </p>
+    </p>
+    <h4>Grading</h4>
+    <p>
+        This exercise uses utility <code>testcase</code> to do
+        a simple multipart grading.
+        In addition, we show how <code>stdio-diff</code> can be
+        used to do simple input/output comparison.
+        Unit testing should be preferred over input/output testing,
+        though it does work for some cases.
+    </p>
+    <p>
+        This pattern is good when you have multiple simple programs
+        that do the actual grading and you like to gather the data
+        to multiple files. Tool <code>testcase</code> has similar
+        internal parts as <code>capture</code>, thus it will take
+        care of the environment security for example.
+    </p>
+    <p>
+        Remember to check project README and <code>run.sh</code> for more information.
+    </p>
+
+view_type: access.types.stdasync.acceptFiles
+files:
+  - field: file1
+    name: solution.sh
+
+container:
+  image: apluslms/grading-base
+  mount: testcase
+  cmd: /exercise/run.sh
