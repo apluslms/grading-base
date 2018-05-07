@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import print_function
-import sys, requests, lib
+import sys, requests, os.path
 try:
     from urllib.parse import quote_plus
 except ImportError:
@@ -18,7 +18,7 @@ def main():
 
 
 def gitlab_api_query(host, token = None, forked = None):
-    source = lib.read_file(SOURCE_FILE).strip()
+    source = read_file(SOURCE_FILE).strip()
     url = None
     try:
         rid = quote_plus(source[source.index(":") + 1:-4])
@@ -54,6 +54,12 @@ def gitlab_api_check(json, forked = None):
             print("{}\nis not forked from {}.\nStart from the fork step."
                 .format(json["web_url"], forked), file=sys.stderr)
             sys.exit(1)
+
+def read_file(path):
+    if not os.path.exists(path):
+        return ""
+    with open(path, "r") as f:
+        return f.read()
 
 
 if __name__ == '__main__':

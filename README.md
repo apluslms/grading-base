@@ -164,6 +164,9 @@ Following utility commands are provided in the path.
     Submits the feedback back to the grading service.
     This command **must** be executed at the end of the grading for the grade to be stored.
 
+    If no argument is provided, there isn't `/feedback/points` and any of `/feedback/<number>` directories exists,
+    then `create-test-feedback` is executed before reading the feedback.
+
     Gets granted points in priority order from:
     a) argument in format "5/10"
     b) /feedback/points file in format "5/10"
@@ -193,6 +196,7 @@ Following utility commands are provided in the path.
 * `create-test-feedback`
 
     Combines feedback items from `/feedback/<number>` directories to `/feedback/out`.
+    This is automatically executed by `grade` if preconditions apply.
 
 * `err-to-out`
 

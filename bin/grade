@@ -1,2 +1,117 @@
 #!/bin/bash
-lib.py grade $1
+exec 3>&2 2>> /feedback/errors
+
+feedback_file=/dev/shm/feedback
+grading_data_file=/dev/shm/grading_data
+opts=""
+
+run_test_feedback_if_needed() {
+    if [ -z "$1" ] && ! [ -e /feedback/points ]; then
+        multiout=$(find /feedback/ -maxdepth 1 -mindepth 1 -regex '.*/[0-9]+' -print -quit)
+        if [ "$multiout" ]; then
+            create-test-feedback
+        fi
+    fi
+}
+
+parse_points_from_out() {
+    points=$(grep '^TotalPoints: ' /feedback/out|awk '{print $2}'|tail -n1)
+    max_points=$(grep '^MaxPoints: ' /feedback/out|awk '{print $2}'|tail -n1)
+    sed -i '/^TotalPoints:/d; /^MaxPoints:/d' /feedback/out
+}
+
+parse_points_from_arg() {
+    points=${1%%/*}
+    max_points=${1##*/}
+}
+
+parse_points_from_file() {
+    IFS=/ read points max_points < /feedback/points
+}
+
+clean_points() {
+    case ${points:-} in
+        ''|*[!0-9]*)
+            echo "Points '$points' is not a valid number." >&2
+            points=0
+            ;;
+    esac
+    case ${max_points:-} in
+        ''|*[!0-9]*)
+            echo "Max points '$max_points' is not a valid number." >&2
+            max_points=$points
+            ;;
+    esac
+    if [ $points -gt $max_points ]; then
+        echo "You are giving more points '$points' than max points '$max_points' allow." >&2
+        max_points=$points
+    fi
+}
+
+get_points() {
+    if [ "$1" ]; then
+        parse_points_from_arg "$1"
+    elif [ -s /feedback/points ]; then
+        parse_points_from_file
+    else
+        parse_points_from_out
+    fi
+    clean_points
+}
+
+collect_feedback() {
+    (
+        cat /feedback/out
+        if [ -s /feedback/err ]; then
+            _prewrap "alert alert-danger" < /feedback/err
+        fi
+        if [ -s /feedback/appendix ]; then
+            echo '<div class="appendixes"><h4>Appendixes</h4>'
+            cat /feedback/appendix
+            echo '</div>'
+        fi
+    ) > $feedback_file
+    opts="$opts -F feedback=<$feedback_file"
+}
+
+collect_grading_data() {
+    grading_options=""
+    # Include errors in grading_data
+    if [ -s /feedback/errors ]; then
+        grading_options="$grading_options errors=@/feedback/errors"
+    fi
+    # add grading data to feedback post
+    if [ "$grading_options" ]; then
+        # NOTE: jo can create json and jq could be used to merge multiple files
+        jo $grading_options > $grading_data_file
+        opts="$opts -F grading_data=<$grading_data_file"
+    fi
+}
+
+handle_error() {
+    error=$(test -e /feedback/error && cat /feedback/error)
+    if [ "$error" = "true" ]; then
+        opts="$opts -F error=true"
+    fi
+}
+
+# Exit if this feedback is already posted
+[ -s /feedback/.posted ] && exit 0
+
+run_test_feedback_if_needed "$1"
+get_points "$1"
+collect_feedback
+collect_grading_data
+handle_error
+
+exec 2>&3 3>&- # restore stderr to fd 2
+# note about 1.0: HTTP 1.1 introduces 100-continue and curl would wait 1s for it.
+# mooc-grader doesn't support it
+curl ${CURL_OPTIONS:-} --silent --show-error --http1.0 \
+    --retry 10 --retry-delay 3 --connect-timeout 20 --max-time 60 \
+    -F "sid=$SID" -F points=$points -F max_points=$max_points \
+    $opts $REC/container-post \
+    > /feedback/.response
+RES=$?
+[ $RES -eq 0 ] && echo ok > /feedback/.posted
+exit $RES

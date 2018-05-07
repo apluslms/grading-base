@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 from __future__ import print_function
 import sys, os, cgi, requests
+import warnings
+
+warnings.warn("lib.py is deprecated. It will be removed in grading-base 3.0", FutureWarning)
 
 
 OUT_FILE = "/feedback/out"

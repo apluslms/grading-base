@@ -7,6 +7,7 @@ RUN apt-get update -qqy && DEBIAN_FRONTEND=noninteractive apt-get install -qqy -
     runit \
     ca-certificates \
     curl \
+    jo \
     git \
     openssh-client \
     python3-requests \
