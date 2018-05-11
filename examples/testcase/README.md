@@ -1,4 +1,4 @@
-This example shows how to use tools `testcase`, `stdio-diff` and of course `grade`.
+This example shows how to use tools `testcase` and `stdio-diff`.
 These tools make `run.sh` way simpler when compared to the capture pattern.
 
 Remember to read comments in `run.sh` as well in `config.yaml`.

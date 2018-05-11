@@ -1,0 +1,42 @@
+---
+title: Just a command pattern
+description: An example of using just a command without run.sh
+instructions: |
+    <h4>The problem</h4>
+    <p>
+        In this exercise you must implement a shell script tbat
+        reads two numbers per line and calculates addition.
+        All results that are greater than 10 should be limited to 10.
+        Your script should print line per input line in format
+        <code>a + b = c</code> where a and b are the given numbers
+        and c is the result.
+    </p>
+    </p>
+    <h4>Grading</h4>
+    <p>
+        In contrary to other examples, in this one we don't use <code>run.sh</code>.
+        Everything is done in single command written in <code>config.yaml</code>.
+        Note the <code>--sh</code> in the command.
+        It makes sure quotes are handled correctly.
+    </p>
+    <p>
+        This exercise uses utility <code>testcase</code> to do
+        a simple multipart grading.
+        In addition, we show how <code>stdio-diff</code> can be
+        used to do simple input/output comparison.
+        Unit testing should be preferred over input/output testing,
+        though it does work for some cases.
+    </p>
+    <p>
+        Remember to check project README and <code>run.sh</code> for more information.
+    </p>
+
+view_type: access.types.stdasync.acceptFiles
+files:
+  - field: file1
+    name: solution.sh
+
+container:
+  image: apluslms/grading-base:dev
+  mount: just_a_command
+  cmd: --sh testcase -t "A test" -p 20 stdio-diff -S -f "failed" /exercise/given.in /exercise/expected.out sh solution.sh

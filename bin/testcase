@@ -1,11 +1,4 @@
 #!/bin/sh
-exec 2>> /feedback/errors
-
-# Read arguments
-
-title=""
-points=0
-skip=0
 
 usage() {
     echo "usage: $0 [-t title] [-p points_on_success] [-s skip] prog arg1 arg2..." >&2
@@ -14,6 +7,10 @@ usage() {
     echo " -s skip    | if not 0, then skip execution of this test. $0 will return with skip as the exit code" >&2
 }
 
+# Read arguments
+title=""
+points=0
+skip=0
 while [ -z "${1%%-*}" ]; do
     case "$1" in
         -t|-n) title=$2 ;;

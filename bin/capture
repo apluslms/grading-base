@@ -1,6 +1,4 @@
 #!/bin/sh
-exec 2>> /feedback/errors
-
 out=/feedback/out
 err=/feedback/err
 user=nobody

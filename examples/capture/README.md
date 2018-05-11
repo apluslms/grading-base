@@ -1,4 +1,4 @@
-This is a simple example on using tools `capture`, `points`, `pre`, `title` and of course `grade`.
+This is a simple example on using tools `capture`, `points`, `pre` and `title`.
 
 Remember to read comments in `run.sh` and `config.yaml`.
 

@@ -16,9 +16,13 @@ RUN apt-get update -qqy && DEBIAN_FRONTEND=noninteractive apt-get install -qqy -
  && (cd /usr/local/bin && ln -s chpst setuidgid && ln -s chpst softlimit && ln -s chpst setlock) \
  && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
-ADD bin /usr/local/bin
-
+COPY bin /usr/local/bin
+COPY grade-wrapper.sh /gw
 RUN mkdir -p /feedback /submission /exercise \
- && chmod o= /feedback
+ && chmod 0770 /feedback \
+ && chmod 0555 /gw /usr/local/bin/*
+
+ENV USER=root HOME=/root
 WORKDIR /submission
+ENTRYPOINT ["/gw"]
 CMD ["/exercise/run.sh"]

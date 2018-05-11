@@ -1,15 +1,5 @@
 #!/bin/bash
 
-# Redirect stderr to errors file, which is only visible to the course staff.
-# This is no way mandatory, but will help you when debugging this file.
-# Note: `capture` redirects stderr of the sub process to /feedback/err,
-# which in contrary is visible to the student.
-exec 2>> /feedback/errors
-
-# For now, grading service puts the student submission into following path.
-# Here, we ensure the working directory is correct
-cd /submission/user
-
 # Testcase is a single graded test case. In short, it runs given command and
 # if that command fails, then no points are given. If the command succeeds, then
 # points are given.
@@ -38,7 +28,6 @@ testcase -t "Limit test" -p 5 -s $ok \
     stdio-diff -S -f "failed" /exercise/given2.in /exercise/expected2.out \
     sh solution.sh
 
-# Always remember to call grade. It will take care of posting the feedback
-# and points back to the grading service.
-# You do not need to call `create-test-feedback` as `grade` will do that if needed.
-grade
+# You should return 0, if ecerything goes well. If you don't, you will get a line in the grading-script-errors log.
+# You can use commands  `exit 0`, `true` or `:` for example.
+:

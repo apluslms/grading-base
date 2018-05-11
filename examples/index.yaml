@@ -33,6 +33,9 @@ modules:
       - key: testcase
         config: testcase/config.yaml
         type: mcq
+      - key: just_a_command
+        config: just_a_command/config.yaml
+        type: mcq
 
 # Module and exercise types to control frequent configuration sets.
 # Any values can be overridden in the item specific configurationi above.

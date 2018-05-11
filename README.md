@@ -16,6 +16,29 @@ where tool version is the version from upstream, grading-base is the version of 
 So, for example, grade-python `3.5-2.2u1` means that there is python 3.5 on top of grading-base 2.2 and it's first update after initial release.
 Update part is optional and can be omitted.
 
+# The container entry point, the grade wrapper
+
+Container has grade wrapper `/gw` set as the entry point.
+This means that everything executed within this container (or derivative) is executed through this script.
+
+The wrapper will take care of redirecting output (stdout and stderr) to `/feedback/grading-script-errors`.
+In addition, the script will make sure that the working directory is set correctly.
+After the grading script has been executed, the wrapper will execute `grade`.
+Thus, the grading script does not need to call `cd` or `grade` anymore.
+
+The wrapper has three different operations, based on the first argument.
+
+1. If the first argument starts with `/bin/` or is `--exec`,
+   then arguments are executed and the wrapper itself stops here.
+   No redirections are done and `grade` is not executed.
+
+2. If the first argument is `--sh`, then rest of the arguments are evaluated with `sh -c "$*"`.
+   This makes strings with quoted text possible in mooc-grader environment.
+
+3. The typical case. Argument list is executed as is.
+
+The exit code from the grading script is stored in the grading-script-errors, but the grade wrapper always exits with 0.
+
 # Filesystem layout
 
 * `/submission/user`
@@ -57,15 +80,15 @@ Update part is optional and can be omitted.
         For example, `capture` redirects stderr to this file.
         If stderr is normal output (e.g. with python unit tests), then you should consider using `err-to-out`.
 
-    * `/feedback/errors`:
+    * `/feedback/grading-script-errors`:
 
-        Errors that should be visible only to staff.
-        This file is added as a part of `grading_data` and send to the grading service.
+        Errors that should be visible only to the staff.
+        This file is added as a part of `grading_data` with key `errors` and send to the grading service.
         Then, data can be shown in the LMS to the course staff.
         Data is expected to be plain text messages from `run.sh` and other tools.
-        You can add `exec 2>> /feedback/errors` in start of your `run.sh` to capture problems from there.
+        By default, `/gw` redirects stdout and stderr from the `run.sh` to this file.
 
-    * `/feedback/error`:
+    * `/feedback/submission-set-error`:
 
         If this file contains `true`, then the submission is set in an error state in the LMS.
         You can use `set-error` in your script to set this file.
@@ -162,7 +185,9 @@ Following utility commands are provided in the path.
 * `grade [points/max]`
 
     Submits the feedback back to the grading service.
-    This command **must** be executed at the end of the grading for the grade to be stored.
+    The grade wrapper will execute this command after the grading script.
+    This command exits without changes if it is executed for the second time,
+    thus grading script can call this too, but is not required to.
 
     If no argument is provided, there isn't `/feedback/points` and any of `/feedback/<number>` directories exists,
     then `create-test-feedback` is executed before reading the feedback.
@@ -211,8 +236,8 @@ Following utility commands are provided in the path.
 
 * `set-error [msg]`
 
-    Set submission error state by writing `true` to `/feedback/error`.
-    If `msg` is provided, then it is written as the reason to `/feedback/errors`.
+    Sets submission error state by writing `true` to `/feedback/submission-set-error`.
+    If `msg` is provided, then it is written as the reason to `/feedback/grading-script-errors`.
 
 * [chpst](http://smarden.org/runit/chpst.8.html), [setuidgid](https://cr.yp.to/daemontools/setuidgid.html), [softlimit](https://cr.yp.to/daemontools/softlimit.html) and [setlock](https://cr.yp.to/daemontools/setlock.html)
 

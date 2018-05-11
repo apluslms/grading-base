@@ -1,6 +1,4 @@
 #!/bin/bash
-exec 3>&2 2>> /feedback/errors
-
 feedback_file=/dev/shm/feedback
 grading_data_file=/dev/shm/grading_data
 opts=""
@@ -77,8 +75,8 @@ collect_feedback() {
 collect_grading_data() {
     grading_options=""
     # Include errors in grading_data
-    if [ -s /feedback/errors ]; then
-        grading_options="$grading_options errors=@/feedback/errors"
+    if [ -s /feedback/grading-script-errors ]; then
+        grading_options="$grading_options errors=@/feedback/grading-script-errors"
     fi
     # add grading data to feedback post
     if [ "$grading_options" ]; then
@@ -89,7 +87,7 @@ collect_grading_data() {
 }
 
 handle_error() {
-    error=$(test -e /feedback/error && cat /feedback/error)
+    error=$(test -e /feedback/submission-set-error && cat /feedback/submission-set-error)
     if [ "$error" = "true" ]; then
         opts="$opts -F error=true"
     fi
@@ -97,6 +95,10 @@ handle_error() {
 
 # Exit if this feedback is already posted
 [ -s /feedback/.posted ] && exit 0
+if [ -z "$REC" -o -z "$SID" ]; then
+    echo "An required environment variable REC or SID is missing." >&2
+    exit 1
+fi
 
 run_test_feedback_if_needed "$1"
 get_points "$1"
@@ -104,7 +106,6 @@ collect_feedback
 collect_grading_data
 handle_error
 
-exec 2>&3 3>&- # restore stderr to fd 2
 # note about 1.0: HTTP 1.1 introduces 100-continue and curl would wait 1s for it.
 # mooc-grader doesn't support it
 curl ${CURL_OPTIONS:-} --silent --show-error --http1.0 \
