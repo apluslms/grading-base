@@ -14,6 +14,6 @@ else
     RES=$?
 fi
 [ $RES -ne 0 ] && echo "Received exit code $RES from: $*" >> /feedback/grading-script-errors
-[ -s /feedback/.posted ] || grade
+[ -s /feedback/.posted ] || grade 2>> /feedback/grading-script-errors >&2
 # We ignore RES, as it could be meaningful in the future
 exit 0

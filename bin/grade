@@ -51,15 +51,18 @@ get_points() {
         parse_points_from_arg "$1"
     elif [ -s /feedback/points ]; then
         parse_points_from_file
-    else
+    elif [ -s /feedback/out ]; then
         parse_points_from_out
     fi
     clean_points
 }
 
 collect_feedback() {
+    touch $feedback_file
     (
-        cat /feedback/out
+        if [ -s /feedback/out ]; then
+            cat /feedback/out
+        fi
         if [ -s /feedback/err ]; then
             _prewrap "alert alert-danger" < /feedback/err
         fi
