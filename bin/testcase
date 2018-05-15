@@ -53,7 +53,7 @@ if [ $skip -ne 0 ]; then
 fi
 
 # Run the actual test
-capture -d $out -- "$@"
+capture -o $out/out.txt -e $out/err.txt -- "$@"
 RES=$?
 if [ $RES -eq 0 ]; then
     echo "passed" > $out/status

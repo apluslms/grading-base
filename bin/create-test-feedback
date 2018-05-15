@@ -39,11 +39,11 @@ for fn in */; do
             echo "<p>Test ignored</p>" >> out
             ;;
         passed|failed)
-            if [ -s $fn/out ]; then
-                cat $fn/out | _prewrap "$error" >> out
+            if [ -s $fn/out.txt ]; then
+                cat $fn/out.txt | _prewrap "$error" >> out
             fi
-            if [ -s $fn/err ]; then
-                cat $fn/err | _prewrap "$error" >> out
+            if [ -s $fn/err.txt ]; then
+                cat $fn/err.txt | _prewrap "$error" >> out
             fi
             ;;
         *)

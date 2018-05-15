@@ -111,8 +111,8 @@ The exit code from the grading script is stored in the grading-script-errors, bu
     * `.../status`: The status of this feedback. Valid values: `ignored`, `skipped`, `passed`, `failed`, `error`.
     * `.../points`: Points given from this item.
     * `.../max_points`: Maximum points that could be given from this item.
-    * `.../out`: Stdout from the test.
-    * `.../err`: Stderr from the test.
+    * `.../out.txt`: Stdout from the test.
+    * `.../err.txt`: Stderr from the test.
 
 
 # Utility commands
@@ -134,14 +134,13 @@ Following utility commands are provided in the path.
 
     Status of this test is stored in `/feedback/<number>/status` accordingly.
 
-* `capture [-d dir] [-o out] [-e err] [-u user] CMD...`
+* `capture [-o out] [-e err] [-u user] CMD...`
 
     Changes the ownership of the working directory to `user`,
     executes the command as `user`,
     and captures the stdout and stderr to `dir`.
 
-    By default `user` is `nobody` and `dir` is `/feedback`.
-    Alternative to `-d`, arguments `-o` and `-e` can be used to set stdout and stderr files separately.
+    By default `user` is `nobody`, `out` is `/feedback/out` and `err` is `/feedback/err`.
 
     In addition to out and err redirection, `capture` will make sure that the environment does not contain `REC` or `SID` (the variables used for posting feedback).
 
