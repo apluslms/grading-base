@@ -2,15 +2,14 @@
 out=/feedback/out
 err=/feedback/err
 user=nobody
-while [ -z "${1%%-*}" ]; do
+while [ "$1" ]; do
     case "$1" in
         -o) out=$2 ; shift 2 ;;
         -e) err=$2 ; shift 2 ;;
         -u) user=$2 ; shift 2 ;;
         --) shift ; break ;;
-        *) echo "Invalid option '$1' for $0" >&2
-           exit 64
-           ;;
+        -*) echo "ERROR: Invalid option '$1' for $0" >&2 ; exit 64 ;;
+        *) break ;;
     esac
 done
 

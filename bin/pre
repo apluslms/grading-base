@@ -2,13 +2,12 @@
 TMP_FILE=/tmp/preout
 
 class=""
-while [ -z "${1%%-*}" ]; do
+while [ "$1" ]; do
     case "$1" in
         -c) class="$class${class:+ }$2" ; shift 2 ;;
         --) shift ; break ;;
-        *) echo "Invalid option '$1' for $0" >&2
-           exit 64
-           ;;
+        -*) echo "ERROR: Invalid option '$1' for $0" >&2 ; exit 64 ;;
+        *) break ;;
     esac
 done
 

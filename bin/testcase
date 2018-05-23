@@ -11,17 +11,18 @@ usage() {
 title=""
 points=0
 skip=0
-while [ -z "${1%%-*}" ]; do
+while [ "$1" ]; do
     case "$1" in
         -t|-n) title=$2 ;;
         -p) points=$2 ;;
         -s|-e) skip=$2 ;;
         --) shift ; break ;;
-        *)
+        -*)
             echo "ERROR: Invalid option $1" >&2
             usage
             exit 64
             ;;
+        *) break ;;
     esac
     shift 2
 done
