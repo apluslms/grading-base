@@ -29,8 +29,11 @@ for fn in */; do
         total_max_points=$((total_max_points + max_points))
     fi
 
+    if [ "$status" != "ignored" -a $max_points -gt 0 ]; then
+        title="$title ($points/$max_points)"
+    fi
 
-    echo "<h3>$title ($points/$max_points)</h3>" >> out
+    echo "<h3>$title</h3>" >> out
     case "$status" in
         skipped)
             echo "<p>Test skipped</p>" >> out
