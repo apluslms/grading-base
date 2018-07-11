@@ -13,6 +13,7 @@ RUN apt_install \
     ca-certificates \
     curl \
     jo \
+    jq \
     time \
     git \
     openssh-client \
