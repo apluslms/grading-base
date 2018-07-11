@@ -13,6 +13,7 @@ RUN apt_install \
     ca-certificates \
     curl \
     jo \
+    time \
     git \
     openssh-client \
     python3-requests \

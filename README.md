@@ -244,6 +244,10 @@ Following utility commands are provided in the path.
     First one provides the other three.
     Read linked documentations for more details.
 
+* [time](http://man7.org/linux/man-pages/man1/time.1.html)
+
+    Utility to measure statistics about timings (e.g. CPU usage).
+
 * [timeout](http://man7.org/linux/man-pages/man1/timeout.1.html)
 
     Utility command to set wallclock timeouts for commands.
