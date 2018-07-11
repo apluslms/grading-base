@@ -244,6 +244,12 @@ Following utility commands are provided in the path.
     First one provides the other three.
     Read linked documentations for more details.
 
+* [timeout](http://man7.org/linux/man-pages/man1/timeout.1.html)
+
+    Utility command to set wallclock timeouts for commands.
+    You can use this to make sure a test fails after some timeout,
+    so you can run second test before container is killed.
+
 * `gitlab-api-query.py GIT_HOST [api_token] [require_fork]`
 
     Reads user repository URL from submitted `gitsource` file,
