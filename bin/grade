@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 feedback_file=/dev/shm/feedback
 grading_data_file=/dev/shm/grading_data
 opts=""
