@@ -283,3 +283,11 @@ Following utility commands are provided in the path.
         List of expected files to check inside the repository.
         The files are moved into /submission/user and the
         contents are written as appendix to end of feedback.
+
+
+# Utility commands for grading image Dockerfiles
+
+* `apt_install <package>`
+
+    Calls apt-get update and apt-get install with list of packages.
+    Takes care of correct options and cleaning temporary files in the end.
