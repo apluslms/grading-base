@@ -10,6 +10,7 @@ RUN apt_install \
     runit \
     ca-certificates \
     curl \
+    gnupg dirmngr \
     jo \
     jq \
     time \

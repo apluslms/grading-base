@@ -1,0 +1,11 @@
+#!/bin/sh -e
+[ "$1" ] || exit 1
+servers=$(shuf -e \
+  ha.pool.sks-keyservers.net hkp://p80.pool.sks-keyservers.net:80 \
+  keyserver.ubuntu.com hkp://keyserver.ubuntu.com:80 \
+  pgp.mit.edu)
+for f; do
+    for server in $servers; do
+        gpg --keyserver "$server" --recv-keys "$f" 2>&1 && break || :
+    done
+done
