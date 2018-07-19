@@ -24,7 +24,10 @@ RUN apt_install \
 \
  # Create basic folders
  && mkdir -p /feedback /submission /exercise \
- && chmod 0770 /feedback
+ && chmod 0770 /feedback \
+\
+ # Change HOME for nobody from /nonexistent to /tmp as set by capture
+ && usermod -d /tmp nobody
 
 # Base grading tools
 COPY bin /usr/local/bin
