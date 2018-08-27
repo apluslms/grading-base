@@ -5,6 +5,9 @@
 [ "${1#/bin/}" != "$1" ] && exec "$@"
 [ "$1" = "--exec" ] && shift && exec "$@"
 
+# Unwrap single argument to list. This hack allows arguments in mooc-grader+kubernetes environment.
+[ $# -eq 1 -a "${1#* }" != "$1" ] && set -- $1
+
 if [ "$1" = "--sh" ]; then
     shift
     sh -c "$*" 2>> /feedback/grading-script-errors >&2
