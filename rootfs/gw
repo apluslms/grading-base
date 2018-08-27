@@ -8,14 +8,14 @@
 # Unwrap single argument to list. This hack allows arguments in mooc-grader+kubernetes environment.
 [ $# -eq 1 -a "${1#* }" != "$1" ] && set -- $1
 
+# Support quoted arguments by executing in shell
 if [ "$1" = "--sh" ]; then
     shift
-    sh -c "$*" 2>> /feedback/grading-script-errors >&2
-    RES=$?
-else
-    "$@" 2>> /feedback/grading-script-errors >&2
-    RES=$?
+    set -- sh -c "$*"
 fi
+
+"$@" 2>> /feedback/grading-script-errors >&2
+RES=$?
 [ $RES -ne 0 ] && echo "Received exit code $RES from: $*" >> /feedback/grading-script-errors
 [ -s /feedback/.posted ] || grade 2>> /feedback/grading-script-errors >&2
 # We ignore RES, as it could be meaningful in the future
