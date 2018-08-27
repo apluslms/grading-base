@@ -14,9 +14,11 @@ if [ "$1" = "--sh" ]; then
     set -- sh -c "$*"
 fi
 
-"$@" 2>> /feedback/grading-script-errors >&2
+exec 3>&2 >/feedback/grading-script-errors 2>&1
+"$@"
 RES=$?
-[ $RES -ne 0 ] && echo "Received exit code $RES from: $*" >> /feedback/grading-script-errors
-[ -s /feedback/.posted ] || grade 2>> /feedback/grading-script-errors >&2
+[ $RES -ne 0 ] && echo "Received exit code $RES from: $*"
+[ -s /feedback/.posted ] || grade
+cat /feedback/grading-script-errors >&3
 # We ignore RES, as it could be meaningful in the future
 exit 0
