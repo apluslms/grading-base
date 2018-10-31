@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys, requests, os.path
 from urllib.parse import urlencode
+from operator import itemgetter
 
 
 SOURCE_FILE = "/submission/user/gitsource"
@@ -43,10 +44,12 @@ def gitlab_api_query(host, token = None, forked = None):
         uid = users[0]['id']
 
         projects = gitlab.get('users/{}/projects'.format(uid), dict(path=project_path))
-        if len(projects) != 1:
+        if len(projects) == 0:
             raise RuntimeError("Couldn't find project {!r} from user {!r}. Do we have access?".format(project_path, username))
-
-        gitlab_api_check(projects[0], forked)
+        
+        sortedProjects = sorted(projects, key=itemgetter('id'), reverse=True)
+        
+        gitlab_api_check(sortedProjects[0], forked)
     except Exception as e:
         print("Failed to check project {!r}".format(source), file=sys.stderr)
         print(str(e), file=sys.stderr);
