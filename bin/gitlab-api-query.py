@@ -50,14 +50,16 @@ def gitlab_api_query(host, token = None, forked = None):
         gitlab_api_check(projects[0], forked)
     except Exception as e:
         print("Failed to check project {!r}".format(source), file=sys.stderr)
-        print(str(e), file=sys.stderr);
+        print("{}: {}".format(e.__class__.__name__, str(e)), file=sys.stderr);
         sys.exit(1)
 
 
 def gitlab_api_check(json, forked = None):
     if json.get("visibility") != 'private':
-        print("{}\nProject is not private! Change visibility to private in project settings for submission to be graded!"
-            .format(json["web_url"]), file=sys.stderr)
+        print("{}\n"
+              "Project is not private! Change visibility to private in project settings!\n"
+              "( project > settings > permissions > project visibility )"
+              .format(json["web_url"]), file=sys.stderr)
         sys.exit(1)
     if forked:
         if (
