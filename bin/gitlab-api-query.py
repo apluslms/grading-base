@@ -18,7 +18,7 @@ class Gitlab:
         self.host = host
         self.token = token
 
-    def get(self, path, args):
+    def get(self, path, args={}):
         safe_url = "https://{}/api/v4/{}?{}".format(self.host, path, urlencode(args))
         if self.token:
             args['private_token'] = self.token
@@ -42,7 +42,8 @@ def gitlab_api_query(host, token = None, forked = None):
             raise RuntimeError("Couldn't find user {!r}".format(username))
         uid = users[0]['id']
 
-        projects = gitlab.get('users/{}/projects'.format(uid), dict(path=project_path))
+        projects = gitlab.get('users/{}/projects'.format(uid))
+        projects = [p for p in projects if p['path'] == project_path]
         if len(projects) != 1:
             raise RuntimeError("Couldn't find project {!r} from user {!r}. Do we have access?".format(project_path, username))
 
