@@ -32,6 +32,8 @@ class Gitlab:
 
 def gitlab_api_query(host, token = None, forked = None):
     source = read_file(SOURCE_FILE).strip()
+    if token and token[0] in "/.":
+        token = read_file(token).strip()
     gitlab = Gitlab(host, token)
     try:
         rid = source.rpartition(':')[2][:-4]
