@@ -155,9 +155,8 @@ Following utility commands are provided in the path.
 
 * `pre [-c class] CMD...`
 
-    Wraps the stdout of the command into &lt;pre&gt; HTML element
-    and escapes any HTML inside. Can be chained, e.g.
-    `capture pre ./my_assessment_code.sh arg1 arg2`
+    Wraps the stdout of the command into `<pre>` HTML element and escapes any HTML inside.
+    Can be chained, e.g. `capture pre ./my_assessment_code.sh arg1 arg2`
 
     Option `-c` can be used to set HTML class for the element.
 
