@@ -1,4 +1,2 @@
 #!/bin/sh
-USER=root HOME=/root env -u REC -u SID -- "$@" >> /feedback/out 2>> /feedback/err
-RES=$?
-exit $RES
+exec capture -u root "$@"

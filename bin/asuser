@@ -1,0 +1,26 @@
+#!/bin/sh -eu
+
+USER=nobody
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -u) USER=$2 ; shift 2 ;;
+        --) shift ; break ;;
+        -*) echo "ERROR: Invalid option '$1' for $0" >&2 ; exit 64 ;;
+        *) break ;;
+    esac
+done
+
+[ $# -gt 0 ] || { echo "No command to execute." >&2; exit 64; }
+
+eval "HOME=~$USER"
+[ "$HOME" -a "${HOME#~}" = "$HOME" -a -e "$HOME" ] || HOME=/tmp
+
+path=""
+IFS=":"
+for dir in $PATH; do
+    [ "${dir%/sbin}" = "$dir" ] && path="$path${path:+:}$dir"
+done
+PATH=$path
+unset REC SID
+export USER HOME PATH
+exec chpst -u "$USER" -- "$@"

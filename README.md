@@ -138,15 +138,20 @@ Following utility commands are provided in the path.
 
     Changes the ownership of the working directory to `user`,
     executes the command as `user`,
-    and captures the stdout and stderr to `dir`.
+    and captures the stdout to `out` and the stderr to `err`.
+    In addition, `capture` ensures that the environment does not contain `REC` or `SID` (the variables used for posting feedback).
 
     By default `user` is `nobody`, `out` is `/feedback/out` and `err` is `/feedback/err`.
 
-    In addition to out and err redirection, `capture` will make sure that the environment does not contain `REC` or `SID` (the variables used for posting feedback).
-
     For example, `capture pre ./my_test` will execute `./my_test` as `nobody` and redirect stdout and stderr to `/feedback/out` and `/feedback/err`.
 
-    If you need to run captured code as root, then use `sudo-capture`.
+    If you need to run captured code as root, then use `capture -u root`.
+
+* `asuser [-u user] CMD...`
+
+    Ensures that environemnt variables `USER`, `HOME` and `PATH` are ok,
+    removes `REC` and `SID` from the environemt and
+    execute a command `CMD` as an user `user`.
 
 * `pre [-c class] CMD...`
 

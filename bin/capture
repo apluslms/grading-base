@@ -2,7 +2,7 @@
 out=/feedback/out
 err=/feedback/err
 user=nobody
-while [ "$1" ]; do
+while [ $# -gt 0 ]; do
     case "$1" in
         -o) out=$2 ; shift 2 ;;
         -e) err=$2 ; shift 2 ;;
@@ -13,10 +13,15 @@ while [ "$1" ]; do
     esac
 done
 
+[ $# -gt 0 ] || { echo "No command to execute." >&2; exit 64; }
+
+unset REC SID
+if [ "$user" = "root" ]; then
+    exec "$@" >> "$out" 2>> "$err"
+fi
+
 chown -R $user . >&2
-USER=$user HOME=/tmp PATH=/usr/local/bin:/usr/bin:/bin \
-    env -u REC -u SID -- \
-    chpst -u $user -- \
+asuser -u $user -- \
     "$@" >> "$out" 2>> "$err"
 RES=$?
 chown -R root . >&2
