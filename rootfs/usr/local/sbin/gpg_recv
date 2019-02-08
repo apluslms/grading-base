@@ -7,6 +7,6 @@ servers=$(shuf -e \
 for f; do
     for server in $servers; do
         echo "Retrieving a key $f from a server $server"
-        gpg2 --keyserver "$server" --recv-keys "$f" 2>&1 && break || :
+        gpg2 --batch --no-tty --keyserver "$server" --recv-keys "$f" 2>&1 </dev/null && break || :
     done
 done
