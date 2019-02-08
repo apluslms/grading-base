@@ -1,0 +1,40 @@
+#!/bin/sh -eu
+
+MAX_SIZE=10000
+
+define_variable() {
+    [ "$1" ] || { echo "Empty variable name" >&2; exit 1; }
+    [ "$2" ] || { echo "Empty file name" >&2; exit 1; }
+    [ -f "$2" ] || { echo "A file '$2' was not found. Required by a variable $1." >&2; exit 1; }
+    if [ $(stat '-c%s' "$2") -gt $MAX_SIZE ]; then
+        echo "A file '$2' for a variable $1 is too big. The maximum size is ${MAX_SIZE}bytes." >&2
+        exit 1
+    fi
+    eval "$1=\$(cat \"\$2\")"
+    export "$1"
+    variables="${variables}${variables:+ }\$$1"
+}
+
+variables=
+out=
+while [ $# -gt 0 ]; do
+    case "$1" in
+        *=*) define_variable "${1%%=*}" "${1#*=}" ;;
+        -o) out=$2 ; shift ;;
+        --) shift ; break ;;
+        -*) echo "ERROR: Invalid option '$1' for $0" >&2 ; exit 64 ;;
+        *) break ;;
+    esac
+    shift
+done
+
+if [ -z "$variables" ]; then
+    echo "usage: $0 [-o out_file] VAR1=in1.txt [VAR2=in2.txt] [template_file]"
+    exit 1
+fi
+if [ $# -gt 0 -a "${1:-}" ]; then
+    [ -f "$1" ] || { echo "A template file '$1' was not found." >&2; exit 1; }
+    exec < "$1"
+fi
+[ "$out" ] && exec > "$out"
+exec envsubst "$variables"

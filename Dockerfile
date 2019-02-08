@@ -8,6 +8,7 @@ COPY rootfs /
 # Base tools that are used by all images
 RUN apt_install \
     runit \
+    gettext-base \
     ca-certificates \
     curl \
     gnupg2 dirmngr \
@@ -17,9 +18,11 @@ RUN apt_install \
     git \
     openssh-client \
     python3-requests \
- # Copy chpst from runit to local file and remove the full package
- && cp /usr/bin/chpst /usr/local/bin \
- && dpkg -P runit \
+ # Copy single binaries from packages and remove packages
+ && cp /usr/bin/chpst \
+       /usr/bin/envsubst \
+       /usr/local/bin \
+ && dpkg -P runit gettext-base \
  && (cd /usr/local/bin && ln -s chpst setuidgid && ln -s chpst softlimit && ln -s chpst setlock) \
 \
  # Create basic folders

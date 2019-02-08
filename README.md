@@ -200,6 +200,25 @@ Following utility commands are provided in the path.
     and wraps /feedback/err into pre with `alert-danger` class at the end.
     If /feedback/appendix exists it will be included at the very end.
 
+* `replace [-o out_file] REPLACE=in.txt [ANOTHER=another.txt] <template_file>`
+
+    A simple string replace tool for handling untrusted inputs.
+    The tool reads `template_file` and replaces all shell variables given as arguments with contents of the given files.
+    For example, when given `REPLACE=in.txt` and `template_file`, then all instances of `$REPLACE` and `${REPLACE}` in `template_file` are replaced with contents of the file `in.txt`.
+    Note that, if there exists a new line in the end of `in.txt`, it will be removed when the file is read.
+
+    Please notice, the only valid shell variable names can be used, i.e. names consisting of letters, numbers and the underscore.
+
+    This tool is wrapper around `envsubst` and the above command is basically the same as the following:
+
+    ```sh
+    REPLACE=$(cat in.txt) ANOTHER=$(cat another.txt) \
+        envsubst '$REPLACE $ANOTHER' < in_file > out_file
+    ```
+
+    Keep in mind that for some purposes `sed` and `envsubst` are simpler,
+    but when handling user input, `replace` might be cleaner.
+
 * `stdio-diff [-c] [-s] [-S] [-p pass_text] [-P] [-f fail_text] <in_file> <expected_out> CMD...`
 
     Simple text comparison wrapper based on `diff`.
@@ -243,6 +262,17 @@ Following utility commands are provided in the path.
     These utilities are used internally, but can also benefit when writing grading scripts.
     First one provides the other three.
     Read linked documentations for more details.
+
+* [envsubst](http://man7.org/linux/man-pages/man1/envsubst.1.html)
+
+    Substitutes environment variables in shell format strings.
+
+    An example usage:
+
+    ```sh
+    $ echo 'My $COLOR dog is huge.' | COLOR=brown envsubst '$COLOR'
+    My brown dog is huge.
+    ```
 
 * [time](http://man7.org/linux/man-pages/man1/time.1.html)
 
