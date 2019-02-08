@@ -6,6 +6,7 @@ servers=$(shuf -e \
   pgp.mit.edu)
 for f; do
     for server in $servers; do
-        gpg --keyserver "$server" --recv-keys "$f" 2>&1 && break || :
+        echo "Retrieving a key $f from a server $server"
+        gpg2 --keyserver "$server" --recv-keys "$f" 2>&1 && break || :
     done
 done

@@ -53,6 +53,6 @@ if [ "$asc" -a "$hasha" ]; then
     verify_hash $file.asc $hasha
 fi
 if [ "$asc" ]; then
-    gpg --verify $file.asc 2>&1
+    gpg2 --verify $file.asc 2>&1
     rm $file.asc
 fi
