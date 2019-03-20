@@ -1,4 +1,4 @@
 #!/bin/sh
-[ "$1" ] && msg=": $@" || msg=""
+[ "$1" ] && msg=": $@" || msg=""
 echo "SUBMISSION SET ERROR$msg" >> /feedback/grading-script-errors
 echo "true" > /feedback/submission-set-error
