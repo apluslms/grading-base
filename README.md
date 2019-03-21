@@ -288,22 +288,22 @@ Following utility commands are provided in the path.
     You can use this to make sure a test fails after some timeout,
     so you can run second test before container is killed.
 
-* `gitlab-api-query.py GIT_HOST [api_token] [require_fork]`
+* `gitlab-api-query [-u git_url | -U git_url_file] TESTS.. GIT_HOST [api_token] [require_fork]`
 
-    Reads user repository URL from submitted `gitsource` file,
-    e.g. written by mooc-grader types.stdasync.acceptGitAddress,
-    and then checks information in GitLab API at given host.
-    Prints message and exits non zero if repository is public.
+    Checks information in GitLab API (v4) at the given host for given `git_url`.
+    If no `git_url` is provided, then it is read from `git_url_file`.
+    Default for `git_url_file` is `/submission/user/gitsource`, which is created by mooc-grader `types.stdasync.acceptGitAddress` for example,
+    The `git_url` should end with `username/repo` or `username/repo.git`.
 
-    * api_token
+    GitLab API often requires authentication and a api token should be set in `api_token`.
+    If the parameter starts with `.` or `/`, then it is expected to be a file containing the token.
 
-        To access GitLab API as privileged user. Can also check
-        that named private repository exists and the fork argument.
+    Supported tests:
 
-    * require_fork
+    * `-p`: require that the project visibility is set to private.
+    * `-f forked_repo`: require that the project is a fork from `forked_repo` (e.g. `username/upstream_repo`).
 
-        Requires the submitted repository to be a fork from the
-        named one, e.g. lehtint6/material-delivery.
+    Command exists with non zero if no tests are provided.
 
 * `git-clone-submission PRIVATE_KEY_PATH [file paths...]`
 

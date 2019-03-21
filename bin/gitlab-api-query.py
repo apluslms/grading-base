@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import sys, requests, os.path
 from urllib.parse import urlencode
+import warnings
 
+warnings.warn("gitlab-api-query.py is deprecated. It will be removed in grading-base 3.0. Use gitlab-api-query instead.", FutureWarning)
 
 SOURCE_FILE = "/submission/user/gitsource"
 

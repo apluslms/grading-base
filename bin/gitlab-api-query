@@ -1,0 +1,129 @@
+#!/bin/sh -eu
+
+gitlab_get() {
+    url="https://$host/api/v4/$1"
+    shift
+    for i in $(seq $#); do
+        set -- "$@" "--data-urlencode" "$1"
+        shift
+    done
+    if [ "$token" ]; then
+        set -- "$@" "--data-urlencode" "private_token=$token"
+    fi
+    if curl -GLfs "$@" "$url"; then
+        return 0
+    else
+        ret=$?
+        echo "return code $ret from: curl -GLfs $url" >&2
+        return $ret
+    fi
+}
+
+usage() {
+    cat <<USAGE
+Usage: $0 [options] test [tests..] git_host [api_token]
+
+options:
+  -u git_url       set the git url to check
+  -U git_url_file  read the git url from a file (default: /submission/user/gitsource)
+
+tests:
+  -p               require visibility to be private
+  -f forked_repo   require repo to be a frok of this
+USAGE
+}
+
+
+# arguments
+
+url=
+urlfile="/submission/user/gitsource"
+visibility=
+forked=
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -u) url=$2 ; shift 2 ;;
+        -U) urlfile=$2 ; shift 2 ;;
+        -p) visibility="private" ; shift ;;
+        -f) forked=$2 ; shift 2 ;;
+        --) shift ; break ;;
+        -*) echo "ERROR: Invalid option '$1' for $0" >&2 ; exit 64 ;;
+        *) break ;;
+    esac
+done
+
+host=${1:-}
+token=${2:-}
+
+if [ -z "$host" ]; then
+    usage >&2
+    exit 1
+fi
+
+if [ -z "$visibility" -a -z "$forked" ]; then
+    echo "No tests provided, nothing to do!\n" >&2
+    usage >&2
+    exit 1
+fi
+
+if [ "$token" ] && [ "${token#/}" != "$token" -o "${token#.}" != "$token" ]; then
+    if ! [ -s "$token" ]; then
+        echo "Missing or empty token file $token" >&2
+        exit 1
+    fi
+    read token < "$token"
+fi
+
+if [ -z "$url" -a "$urlfile" ]; then
+    if ! [ -s "$urlfile" ]; then
+        echo "Missing or empty git url file $urlfile" >&2
+        exit 1
+    fi
+    read url < "$urlfile"
+fi
+
+project_path=$(echo "$url" | grep -oE '[^:/.]+/[^/.]+(\.git)?$' | sed 's/\.git$//')
+project_id=$(printf "$project_path" | jq -sRr '@uri')
+
+if [ -z "$project_path" ]; then
+    echo "Invalid repo uri '$url'"
+    exit 1
+fi
+
+
+# download project json
+
+ret=0
+project=$(gitlab_get "projects/$project_id") || ret=$?
+if [ $ret -ne 0 -o -z "$project" ]; then
+    echo "Couldn't find project '$path' ($url)."
+    echo "Have you granted access for it?"
+    exit 1
+fi
+
+
+# run tests
+
+errors=0
+
+# check visibility
+
+if [ "$visibility" -a "$(echo "$project" | jq -rc ".visibility == \"$visibility\"")" = 'false' ]; then
+    echo "$project" | jq -Mrc '.web_url'
+    echo "Visibility of the project is not $visibility! Change visibility in project settings!"
+    echo "( project > settings > general > permissions > project visibility )"
+    errors=1
+fi
+
+
+# check forked
+
+if [ "$forked" -a "$(echo "$project" | jq -rc ".forked_from_project.path_with_namespace == \"$forked\"")" = 'false' ]; then
+    echo "$project" | jq -Mrc '.web_url'
+    echo "The repo is not forked from $forked."
+    echo "Start from the fork step."
+    errors=1
+fi
+
+exit $errors
