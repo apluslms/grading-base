@@ -29,7 +29,7 @@ options:
 
 tests:
   -p               require visibility to be private
-  -f forked_repo   require repo to be a frok of this
+  -f forked_repo   require repo to be a fork of this
 USAGE
 }
 
