@@ -1,4 +1,4 @@
-FROM debian:stretch-slim
+FROM debian:stretch-20190506-slim
 
 ENV LANG=C.UTF-8 USER=root HOME=/root
 
