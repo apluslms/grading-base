@@ -22,6 +22,8 @@ RUN apt_install \
        /usr/bin/envsubst \
        /usr/local/bin \
  && dpkg -P runit gettext-base \
+ && apt-get -qqy autoremove \
+ && dpkg -l|awk '/^rc/ {print $2}'|xargs -r dpkg -P \
  && (cd /usr/local/bin && ln -s chpst setuidgid && ln -s chpst softlimit && ln -s chpst setlock) \
 \
  # Create basic folders
