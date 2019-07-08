@@ -325,17 +325,3 @@ Following utility commands are provided in the path.
 
     Calls apt-get update and apt-get install with list of packages.
     Takes care of correct options and cleaning temporary files in the end.
-
-* `download_verify [options] <url>`
-
-    Downloads given url using curl. If set of verify options is given, then addition files are downloaded and validity is checked.
-
-    * `-a` download `<url>.asc` and check gpg signature.
-    * `-s` download `<url>.sha1` and check that downloaded file matches sha1sum.
-    * `-m` download `<url>.md5` and check that downloaded file matches md5sum.
-    * `-as` download `<url>.asc.sha1` and check that downloaded asc file matches sha1sum (used with -a).
-    * `-am` download `<url>.asc.md5` and check that downloaded asc file matches md5sum (used with -a).
-
-* `gpg_recv <key> [key...]`
-
-    Use gpg to find gpg key from keyserver.

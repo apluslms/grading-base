@@ -11,7 +11,6 @@ RUN apt_install \
     gettext-base \
     ca-certificates \
     curl \
-    gnupg2 dirmngr \
     jo \
     jq \
     time \
