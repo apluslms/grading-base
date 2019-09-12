@@ -112,7 +112,7 @@ handle_error
 # note about 1.0: HTTP 1.1 introduces 100-continue and curl would wait 1s for it.
 # mooc-grader doesn't support it
 curl ${CURL_OPTIONS:-} --silent --show-error --http1.0 \
-    --retry 10 --retry-delay 3 --connect-timeout 20 --max-time 60 \
+    --retry 10 --retry-delay 3 --connect-timeout 20 --max-time 60 --retry-connrefused \
     -F "sid=$SID" -F points=$points -F max_points=$max_points \
     $opts $REC/container-post \
     > /feedback/.response
