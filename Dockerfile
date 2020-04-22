@@ -16,6 +16,7 @@ RUN apt_install \
     time \
     git \
     openssh-client \
+    file \
  # Copy single binaries from packages and remove packages
  && cp /usr/bin/chpst \
        /usr/bin/envsubst \
