@@ -22,14 +22,12 @@ for fn in */; do
         error=""
     fi
 
-    if [ "$status" != "ignored" ]; then
-        if [ "$status" != "skipped" ]; then
-            total_points=$((total_points + points))
-        fi
-        total_max_points=$((total_max_points + max_points))
+    if [ "$status" != "skipped" ]; then
+        total_points=$((total_points + points))
     fi
+    total_max_points=$((total_max_points + max_points))
 
-    if [ "$status" != "ignored" -a $max_points -gt 0 ]; then
+    if [ $max_points -gt 0 ]; then
         title="$title ($points/$max_points)"
     fi
 
@@ -37,9 +35,6 @@ for fn in */; do
     case "$status" in
         skipped)
             echo "<p>Test skipped</p>" >> out
-            ;;
-        skipped)
-            echo "<p>Test ignored</p>" >> out
             ;;
         passed|failed)
             if [ -s $fn/out.txt ]; then

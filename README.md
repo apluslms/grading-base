@@ -108,7 +108,7 @@ The exit code from the grading script is stored in the grading-script-errors, bu
     More advanced or specific templates can of course deviate from those.
 
     * `.../title`: A title or a display name for this feedback item.
-    * `.../status`: The status of this feedback. Valid values: `ignored`, `skipped`, `passed`, `failed`, `error`.
+    * `.../status`: The status of this feedback. Valid values: `skipped`, `passed`, `failed`, `error`.
     * `.../points`: Points given from this item.
     * `.../max_points`: Maximum points that could be given from this item.
     * `.../out.txt`: Stdout from the test.
