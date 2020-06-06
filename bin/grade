@@ -4,11 +4,11 @@ grading_data_file=/dev/shm/grading_data
 opts=""
 
 run_test_feedback_if_needed() {
-    if [ -z "$1" ] && ! [ -e /feedback/points ]; then
-        multiout=$(find /feedback/ -maxdepth 1 -mindepth 1 -regex '.*/[0-9]+' -print -quit)
-        if [ "$multiout" ]; then
-            create-test-feedback
-        fi
+    multiout=$(find /feedback/ -maxdepth 1 -mindepth 1 -regex '.*/[0-9]+' -print -quit)
+    if [ "$1" -o -s /feedback/points ]; then
+        [ "$multiout" ] && echo "WARNING: found testcases, which will be ignored, because points were already set!"
+    else
+        [ "$multiout" ] && create-test-feedback
     fi
 }
 
