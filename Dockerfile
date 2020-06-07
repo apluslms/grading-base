@@ -30,8 +30,14 @@ RUN apt_install \
  && mkdir -p /feedback /submission /exercise \
  && chmod 0770 /feedback \
 \
- # Change HOME for nobody from /nonexistent to /tmp as set by capture
- && usermod -d /tmp nobody
+ # Change HOME for nobody from /nonexistent to /tmp
+ && usermod -d /tmp nobody \
+ # Create two more nobody users
+ && groupadd doer -g 65501 \
+ && useradd doer -u 65501 -g 65501 -c "a nobody user" -s /usr/sbin/nologin -m -k - \
+ && groupadd tester -g 65502 \
+ && useradd tester -u 65502 -g 65502 -c "a nobody user" -s /usr/sbin/nologin -m -k - \
+ && :
 
 # Base grading tools
 COPY bin /usr/local/bin
