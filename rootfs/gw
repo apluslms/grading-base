@@ -15,7 +15,7 @@ if [ "$1" = "--sh" ]; then
 fi
 
 exec 3>&2 >/feedback/grading-script-errors 2>&1
-"$@"
+"$@" 3>&-
 RES=$?
 [ $RES -ne 0 ] && echo "Received exit code $RES from: $*"
 [ -s /feedback/.posted ] || grade
