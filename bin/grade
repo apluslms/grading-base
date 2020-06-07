@@ -64,7 +64,7 @@ collect_feedback() {
             cat /feedback/out
         fi
         if [ -s /feedback/err ]; then
-            _prewrap "alert alert-danger" < /feedback/err
+            pre -c "alert alert-danger" < /feedback/err
         fi
         if [ -s /feedback/appendix ]; then
             echo '<div class="appendixes"><h4>Appendixes</h4>'

@@ -43,10 +43,10 @@ for fn in */; do
             ;;
         passed|failed)
             if [ -s $fn/out.txt ]; then
-                cat $fn/out.txt | _prewrap "$error" >> out
+                cat $fn/out.txt | pre -c "$error" >> out
             fi
             if [ -s $fn/err.txt ]; then
-                cat $fn/err.txt | _prewrap "$error" >> out
+                cat $fn/err.txt | pre -c "$error" >> out
             fi
             ;;
         *)

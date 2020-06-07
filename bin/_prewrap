@@ -1,5 +1,0 @@
-#!/bin/sh
-[ "$1" ] && class=" class=\"$1\""
-echo "<pre${class}>"
-sed 's/\&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g'
-echo "</pre>"
