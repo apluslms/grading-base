@@ -23,4 +23,4 @@ done
 PATH=$path
 unset REC SID
 export USER HOME PATH
-exec chpst -u "$USER" -- "$@"
+exec chpst -U "$USER" -u "$USER" -- "$@"

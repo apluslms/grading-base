@@ -149,9 +149,23 @@ Following utility commands are provided in the path.
 
 * `asuser [-u user] CMD...`
 
-    Ensures that environemnt variables `USER`, `HOME` and `PATH` are ok,
-    removes `REC` and `SID` from the environemt and
-    execute a command `CMD` as an user `user`.
+    Drops privileges to the `user` and executes `CMD`.
+    See command `capture`, which does output redirection before calling `asuser`.
+
+    NB `asuser` must be executed as the user `root`, as we can only drop privileges.
+
+    In addition to privileges, `asuser` makes following changes to the environment variables:
+
+    * set `USER` to the `user`
+    * set `HOME` to the home path of the `user`
+    * set `UID` to the numerical id of the `user`
+    * set `GID` to the numerical id of the main group of the `user`
+    * drop locations ending in `*/sbin` from the `PATH`
+    * remove `REC` and `SID` (used to post feedback to MOOC-Grader)
+
+    _New in version 2.8._
+
+    _Changed in version 3.1_: Added environment variables `UID` and `GID`
 
 * `pre [-c class] CMD...`
 
