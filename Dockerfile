@@ -13,6 +13,7 @@ RUN apt_install \
     curl \
     jo \
     jq \
+    make \
     time \
     git \
     openssh-client \
