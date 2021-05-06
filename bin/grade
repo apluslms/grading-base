@@ -13,6 +13,7 @@ run_test_feedback_if_needed() {
 }
 
 parse_points_from_out() {
+    sed -i 's/\x00/\\x00/g' /feedback/out
     points=$(grep '^TotalPoints: ' /feedback/out|awk '{print $2}'|tail -n1)
     max_points=$(grep '^MaxPoints: ' /feedback/out|awk '{print $2}'|tail -n1)
     sed -i '/^TotalPoints:/d; /^MaxPoints:/d' /feedback/out
