@@ -12,8 +12,19 @@ run_test_feedback_if_needed() {
     fi
 }
 
+escape_feedback() {
+    if [ -s /feedback/out ]; then
+        sed -i 's/\x00/\\x00/g' /feedback/out
+    fi
+    if [ -s /feedback/err ]; then
+        sed -i 's/\x00/\\x00/g' /feedback/err
+    fi
+    if [ -s /feedback/appendix ]; then
+        sed -i 's/\x00/\\x00/g' /feedback/appendix
+    fi
+}
+
 parse_points_from_out() {
-    sed -i 's/\x00/\\x00/g' /feedback/out
     points=$(grep '^TotalPoints: ' /feedback/out|awk '{print $2}'|tail -n1)
     max_points=$(grep '^MaxPoints: ' /feedback/out|awk '{print $2}'|tail -n1)
     sed -i '/^TotalPoints:/d; /^MaxPoints:/d' /feedback/out
@@ -105,6 +116,7 @@ if [ -z "$REC" -o -z "$SID" ]; then
 fi
 
 run_test_feedback_if_needed "$1"
+escape_feedback
 get_points "$1"
 collect_feedback
 collect_grading_data
