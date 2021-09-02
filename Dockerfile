@@ -1,4 +1,4 @@
-FROM debian:buster-20210816-slim
+FROM debian:bullseye-20210816-slim
 
 ENV LANG=C.UTF-8 USER=root HOME=/root
 
