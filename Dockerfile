@@ -13,6 +13,7 @@ RUN apt_install \
     curl \
     jo \
     jq \
+    less \
     make \
     time \
     git \
