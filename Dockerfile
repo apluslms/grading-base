@@ -1,4 +1,4 @@
-FROM debian:bullseye-20221114-slim
+FROM --platform=$TARGETPLATFORM debian:bullseye-20221114-slim
 
 ENV LANG=C.UTF-8 USER=root HOME=/root
 
