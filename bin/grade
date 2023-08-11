@@ -1,4 +1,10 @@
 #!/bin/sh
+
+# MOOC-Grader has the Django variable settings.DATA_UPLOAD_MAX_MEMORY_SIZE set to 10*1024*1024 (10MB).
+# Therefore, the grading containers have a maximum feedback size of 9*1024*1024 (9MB).
+# The remaining 1MB is allocated for data, such as sid, points, max_points, and grading_data (errors visible to staff).
+MAX_FEEDBACK_SIZE=$((9*1024*1024))
+
 feedback_file=/dev/shm/feedback
 grading_data_file=/dev/shm/grading_data
 opts=""
@@ -84,6 +90,15 @@ collect_feedback() {
             echo '</div>'
         fi
     ) > $feedback_file
+
+    feedback_size=$(stat -c%s "$feedback_file")
+
+    # Empty the feedback file if it is too large
+    if [ $feedback_size -gt $MAX_FEEDBACK_SIZE ]; then
+        > $feedback_file
+        opts="$opts -F feedback_size_error=true"
+    fi
+
     opts="$opts -F feedback=<$feedback_file"
 }
 
