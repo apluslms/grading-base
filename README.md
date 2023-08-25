@@ -322,7 +322,7 @@ Following utility commands are provided in the path.
 * `git-clone-submission PRIVATE_KEY_PATH [file paths...]`
 
     Clones repository from URL submitted as `gitsource` file
-    into /submission/user-repo. The private ssh key allows
+    into /submission-repo. The private ssh key allows
     access to repositories where the public key pair is added
     as a deploy key. Prints status and exits non zero if fails.
 
