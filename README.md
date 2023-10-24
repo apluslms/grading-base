@@ -190,6 +190,10 @@ Following utility commands are provided in the path.
 
     where `$?` is the exit code from `capture`.
 
+    WARNING! The `points` command is currently not reentrant, that is to say,
+    it is unsafe for concurrent execution.
+    The issue #10 may change this once fixed.
+
 * `title [-c class] [-e element] [-O] <text>`
 
     Writes `text` inside HTML element `element` to `/feedback/out`.
