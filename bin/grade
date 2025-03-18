@@ -102,8 +102,30 @@ collect_feedback() {
     opts="$opts -F feedback=<$feedback_file"
 }
 
+parse_tags_from_file() {
+    read submission_tags < /feedback/submission_tags
+}
+
+parse_tags_from_out() {
+    submission_tags=$(grep '^SubmissionTags: ' /feedback/out|awk '{print $2}'|tail -n1)
+    sed -i '/^SubmissionTags:/d' /feedback/out
+}
+
+get_submission_tags() {
+    if [ -s /feedback/submission_tags ]; then
+        parse_tags_from_file
+    elif [ -s /feedback/out ]; then
+        parse_tags_from_out
+    fi
+}
+
 collect_grading_data() {
-    grading_options=""
+    get_submission_tags
+    if [ -n "$submission_tags" ]; then
+        grading_options="submission_tags=$submission_tags"
+    else
+        grading_options=""
+    fi
     # Include errors in grading_data
     if [ -s /feedback/grading-script-errors ]; then
         grading_options="$grading_options errors=@/feedback/grading-script-errors"
@@ -111,7 +133,7 @@ collect_grading_data() {
     # add grading data to feedback post
     if [ "$grading_options" ]; then
         # NOTE: jo can create json and jq could be used to merge multiple files
-        jo $grading_options > $grading_data_file
+        jo "$grading_options" > $grading_data_file
         opts="$opts -F grading_data=<$grading_data_file"
     fi
 }
@@ -133,8 +155,8 @@ fi
 run_test_feedback_if_needed "$1"
 escape_feedback
 get_points "$1"
-collect_feedback
 collect_grading_data
+collect_feedback
 handle_error
 
 # note about 1.0: HTTP 1.1 introduces 100-continue and curl would wait 1s for it.
