@@ -133,7 +133,7 @@ collect_grading_data() {
     # add grading data to feedback post
     if [ "$grading_options" ]; then
         # NOTE: jo can create json and jq could be used to merge multiple files
-        jo "$grading_options" > $grading_data_file
+        jo $grading_options > $grading_data_file
         opts="$opts -F grading_data=<$grading_data_file"
     fi
 }
