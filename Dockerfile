@@ -1,4 +1,4 @@
-FROM --platform=$TARGETPLATFORM debian:bookworm-20240812-slim
+FROM --platform=$TARGETPLATFORM debian:trixie-20250811-slim
 
 ENV LANG=C.UTF-8 USER=root HOME=/root
 
