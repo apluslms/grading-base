@@ -1,4 +1,4 @@
-FROM --platform=$TARGETPLATFORM debian:trixie-20250811-slim
+FROM debian:trixie-20260518-slim
 
 ENV LANG=C.UTF-8 USER=root HOME=/root
 
